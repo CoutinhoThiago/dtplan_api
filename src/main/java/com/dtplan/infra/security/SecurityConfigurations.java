@@ -53,10 +53,17 @@ public class SecurityConfigurations {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200")); // Permite o frontend
+
+        // Permitir todas as origens
+        configuration.addAllowedOriginPattern("*"); // Para versões recentes do Spring
+
+        // Se a versão for mais antiga e não suportar padrões, use:
+        // configuration.setAllowedOrigins(Collections.singletonList("*"));
+
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(true);  // Atenção: `allowCredentials` não funciona com `"*"` no `AllowedOrigins`.
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); // Aplica a configuração a todas as rotas
         return source;
