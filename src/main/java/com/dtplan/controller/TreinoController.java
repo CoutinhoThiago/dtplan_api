@@ -35,7 +35,7 @@ public class TreinoController {
 	@Autowired
 	private TreinoService treinoService;
 
-	@PostMapping
+	@PostMapping("/criar")
 	@Transactional
 	public CadastroTreinoDTO cadastrar(@RequestBody CadastroTreinoDTO dados, UriComponentsBuilder uriBuilder) {
 		return treinoService.cadastrarTreino(dados);
