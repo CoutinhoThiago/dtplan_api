@@ -1,16 +1,29 @@
 package com.dtplan.infra.config;
 
+import com.dtplan.domain.alimento.Alimento;
+import com.dtplan.domain.alimento.AlimentoRepository;
+import com.dtplan.domain.alimento.AlimentoService;
+import com.dtplan.domain.dieta.Dieta;
+import com.dtplan.domain.dieta.DietaRepository;
+import com.dtplan.domain.dieta.DietaService;
+import com.dtplan.domain.dieta.TipoDieta;
+import com.dtplan.domain.dieta.dto.CadastrarDietaDTO;
 import com.dtplan.domain.exercicio.ExercicioRepository;
 import com.dtplan.domain.exercicio.ExercicioService;
 import com.dtplan.domain.exercicio.dto.CadastrarExercicioDTO;
 import com.dtplan.domain.ficha.FichaRepository;
 import com.dtplan.domain.ficha.FichaService;
 import com.dtplan.domain.ficha.dto.CadastrarFichaDTO;
+import com.dtplan.domain.refeicao.Refeicao;
+import com.dtplan.domain.refeicao.RefeicaoRepository;
+import com.dtplan.domain.refeicao.RefeicaoService;
+import com.dtplan.domain.refeicao.dto.CadastrarRefeicaoDTO;
 import com.dtplan.domain.treino.Tipo;
 import com.dtplan.domain.treino.TreinoRepository;
 import com.dtplan.domain.treino.TreinoService;
 import com.dtplan.domain.treino.dto.CadastroTreinoDTO;
 import com.dtplan.domain.usuario.Permissao;
+import com.dtplan.domain.usuario.Usuario;
 import com.dtplan.domain.usuario.UsuarioRepository;
 import com.dtplan.domain.usuario.UsuarioService;
 import com.dtplan.domain.usuario.dto.CadastrarUsuarioDTO;
@@ -18,7 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -28,6 +43,9 @@ public class DataInitializer implements CommandLineRunner {
     private final ExercicioRepository exercicioRepository;
     private final TreinoRepository treinoRepository;
     private final FichaRepository fichaRepository;
+    private final DietaRepository dietaRepository;
+    private final AlimentoRepository alimentoRepository;
+    private final RefeicaoRepository refeicaoRepository;
 
     @Autowired
     private UsuarioService usuarioService;
@@ -41,11 +59,23 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private FichaService fichaService;
 
-    public DataInitializer(UsuarioRepository usuarioRepository, ExercicioRepository exercicioRepository, TreinoRepository treinoRepository, FichaRepository fichaRepository) {
+    @Autowired
+    private DietaService dietaService;
+
+    @Autowired
+    private AlimentoService alimentoService;
+
+    @Autowired
+    private RefeicaoService refeicaoService;
+
+    public DataInitializer(UsuarioRepository usuarioRepository, ExercicioRepository exercicioRepository, TreinoRepository treinoRepository, FichaRepository fichaRepository, DietaRepository dietaRepository, AlimentoRepository alimentoRepository, RefeicaoRepository refeicaoRepository) {
         this.usuarioRepository = usuarioRepository;
         this.exercicioRepository = exercicioRepository;
         this.treinoRepository = treinoRepository;
         this.fichaRepository = fichaRepository;
+        this.dietaRepository = dietaRepository;
+        this.alimentoRepository = alimentoRepository;
+        this.refeicaoRepository = refeicaoRepository;
     }
 
     @Override
@@ -176,6 +206,66 @@ public class DataInitializer implements CommandLineRunner {
             // Cadastra cada ficha no banco de dados
             fichas.forEach(fichaService::cadastrarFicha);
             System.out.println("Fichas cadastradas com sucesso!");
+        }
+
+
+        if (alimentoRepository.count() == 0) {
+            List<Alimento> alimentos = List.of(
+                    new Alimento("Frango grelhado"),
+                    new Alimento("Arroz integral"),
+                    new Alimento("Batata doce"),
+                    new Alimento("Ovos"),
+                    new Alimento("Iogurte"),
+                    new Alimento("Banana"),
+                    new Alimento("Aveia"),
+                    new Alimento("Peito de peru")
+            );
+            alimentoRepository.saveAll(alimentos);
+            System.out.println("Alimentos cadastrados com sucesso!");
+        }
+
+
+        if (dietaRepository.count() == 0) {
+            // Buscar o usuário
+            Optional<Usuario> usuarioOpt = Optional.ofNullable(usuarioRepository.findByEmail("tcoutinhossilva@gmail.com"));
+
+            // Verificar se o usuário foi encontrado
+            if (usuarioOpt.isPresent()) {
+                Usuario usuario = usuarioOpt.get(); // Obtém o usuário
+
+                // Criar a dieta inicialmente
+                Dieta dieta = new Dieta(new CadastrarDietaDTO(
+                        "Dieta de ganho de massa",
+                        "tcoutinhossilva@gmail.com",
+                        TipoDieta.GANHO_MASSA,
+                        usuario
+                ));
+
+                // IDs das refeições que queremos adicionar
+                List<Long> idsRefeicoes = List.of(1L, 2L);
+                dieta.adicionarRefeicoesPorIds(idsRefeicoes, refeicaoRepository); // Adiciona as refeições à dieta
+
+                // Salvar a dieta no repositório
+                dietaRepository.save(dieta);
+                System.out.println("Dieta cadastrada com sucesso!");
+            } else {
+                System.out.println("Usuário não encontrado! A dieta não foi cadastrada.");
+            }
+        }
+
+        if (refeicaoRepository.count() == 0) {
+            Long dietaId = 1L; // Substitua pelo ID correto que você deseja buscar
+
+            Optional<Dieta> dietaOpt = dietaRepository.findById(dietaId);
+            Dieta dieta = dietaOpt.get();
+
+            List<Refeicao> refeicoes = List.of(
+                    new Refeicao("Café da manhã", dieta, null),
+                    new Refeicao("Almoço", dieta, null)
+            );
+
+            refeicaoRepository.saveAll(refeicoes); // Salva a lista de Refeição
+            System.out.println("Refeições cadastradas com sucesso!");
         }
     }
 

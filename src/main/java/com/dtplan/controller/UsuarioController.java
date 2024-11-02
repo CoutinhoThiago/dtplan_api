@@ -24,22 +24,28 @@ public class UsuarioController {
 
     @GetMapping("/detalhar")
     //@SecurityRequirement(name = "bearer-key")
-    public ResponseEntity detalharUsuario(@RequestHeader("Authorization") String authorizationHeader) {
-        return usuarioService.detalharUsuario(authorizationHeader);
+    public ResponseEntity<ResponseEntity> detalharUsuario(@RequestHeader("Authorization") String authorizationHeader) {
+        var dto = usuarioService.detalharUsuario(authorizationHeader);
+
+        return ResponseEntity.ok(dto);
     }
 
     @PutMapping("/editar")
     @Transactional
     //@SecurityRequirement(name = "bearer-key")
-    public DetalharUsuarioDTO editarUsuario(@RequestHeader("Authorization") String authorizationHeader, @RequestBody EditarUsuarioDTO dados) {
-        return usuarioService.atualizarDadosUsuario(authorizationHeader, dados);
+    public ResponseEntity<DetalharUsuarioDTO> editarUsuario(@RequestHeader("Authorization") String authorizationHeader, @RequestBody EditarUsuarioDTO dados) {
+        var dto = usuarioService.atualizarDadosUsuario(authorizationHeader, dados);
+
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping("/excluir")
     @Transactional
     //@SecurityRequirement(name = "bearer-key")
     public ResponseEntity excluirUsuario(@RequestHeader("Authorization") String authorizationHeader) {
-        return usuarioService.excluirUsuario(authorizationHeader);
+        var dto = usuarioService.excluirUsuario(authorizationHeader);
+
+        return ResponseEntity.ok(dto);
     }
 
 }

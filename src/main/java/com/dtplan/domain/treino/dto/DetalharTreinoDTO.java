@@ -7,7 +7,7 @@ import com.dtplan.domain.usuario.Usuario;
 
 import java.util.List;
 
-public record DadosDetalharTreinoDTO(
+public record DetalharTreinoDTO(
 		long id,
 		String descricao,
 		String autor,
@@ -18,7 +18,7 @@ public record DadosDetalharTreinoDTO(
 		List<Ficha> fichas
 ) {
 
-	public DadosDetalharTreinoDTO(Treino treino, List<Ficha> fichas) {
+	public DetalharTreinoDTO(Treino treino, List<Ficha> fichas) {
 		this(
 				treino.getId(),
 				treino.getDescricao(),

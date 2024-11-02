@@ -2,6 +2,7 @@ package com.dtplan.domain.ficha;
 
 import com.dtplan.domain.exercicio.Exercicio;
 import com.dtplan.domain.exercicio.ExercicioRepository;
+import com.dtplan.domain.exercicio.dto.EditarExercicioDTO;
 import com.dtplan.domain.ficha.dto.CadastrarFichaDTO;
 import com.dtplan.domain.treino.Treino;
 import jakarta.persistence.*;
@@ -46,5 +47,13 @@ public class Ficha {
         this.nome = nome;
         this.treino = treino;
         this.exercicios = exercicios;
+    }
+    public void atualizarInformacoes(String nome, List<Exercicio> exercicios) {
+        if (nome != null) {
+            this.nome = nome;
+        }
+        if (exercicios != null) {
+            this.exercicios = exercicios;
+        }
     }
 }

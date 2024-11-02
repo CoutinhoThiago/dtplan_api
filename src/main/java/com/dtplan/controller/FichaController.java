@@ -1,10 +1,12 @@
 package com.dtplan.controller;
 
+import com.dtplan.domain.exercicio.dto.EditarExercicioDTO;
 import com.dtplan.domain.ficha.Ficha;
 import com.dtplan.domain.ficha.FichaRepository;
 import com.dtplan.domain.ficha.FichaService;
 import com.dtplan.domain.ficha.dto.CadastrarFichaDTO;
 import com.dtplan.domain.ficha.dto.DetalharFichaDTO;
+import com.dtplan.domain.ficha.dto.EditarFichaDTO;
 import com.dtplan.domain.ficha.dto.ListarFichaDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,33 +33,29 @@ public class FichaController {
 	private FichaService fichaService;
 
 	@PostMapping
-	@Transactional
-	public DetalharFichaDTO cadastrar(@RequestBody CadastrarFichaDTO dados, UriComponentsBuilder uriBuilder) {
-		return fichaService.cadastrarFicha(dados);
+	public ResponseEntity<DetalharFichaDTO> cadastrar(@RequestBody CadastrarFichaDTO dados, UriComponentsBuilder uriBuilder) {
+		var dto = fichaService.cadastrarFicha(dados);
+
+		return ResponseEntity.ok(dto);
+	}
+
+	@PutMapping("/editar/{id}")
+	public ResponseEntity <DetalharFichaDTO> editar(@PathVariable long id, @RequestBody EditarFichaDTO dados) {
+		var dto =  fichaService.editarFicha(id, dados);
+
+		return ResponseEntity.ok(dto);
 	}
 
 	@GetMapping("/listar")
     public ResponseEntity<Page<ListarFichaDTO>> listarTodas(@PageableDefault(size = 10) Pageable paginacao) {
-		var page = fichaRepository.findAll(paginacao).map(ListarFichaDTO::new);
-		return ResponseEntity.ok(page);
+		var dto = fichaService.listarFichas(paginacao);
+
+		return ResponseEntity.ok(dto);
     }
 	@GetMapping("/listar/{id}")
-	public ResponseEntity<Page<ListarFichaDTO>> listar(@PathVariable long id, @PageableDefault(size = 10) Pageable paginacao) {
-		List<Ficha> listaFichas = fichaRepository.findByTreinoId(id);
+	public ResponseEntity<DetalharFichaDTO> detalhar(@PathVariable long id) {
+		var dto = fichaService.detalharFicha(id);
 
-		// Cria uma página de fichas com base na lista de fichas e na paginação fornecida
-		Page<Ficha> paginaFichas = new PageImpl<>(listaFichas, paginacao, listaFichas.size());
-
-		// Converte a página de fichas em uma página de DTOs
-		Page<ListarFichaDTO> dto = paginaFichas.map(ListarFichaDTO::new);
-		return ResponseEntity.ok(dto);
-	}
-
-	@GetMapping("/detalhar/{id}")
-	public ResponseEntity<?> detalhar(@PathVariable long id) {
-		Ficha ficha = fichaRepository.findById(id).orElseThrow(() -> new RuntimeException("Ficha não encontrado"));
-
-		DetalharFichaDTO dto = new DetalharFichaDTO(ficha);
 		return ResponseEntity.ok(dto);
 	}
 }

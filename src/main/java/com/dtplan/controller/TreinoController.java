@@ -5,7 +5,8 @@ import com.dtplan.domain.ficha.Ficha;
 import com.dtplan.domain.ficha.FichaRepository;
 import com.dtplan.domain.treino.Treino;
 import com.dtplan.domain.treino.TreinoService;
-import com.dtplan.domain.treino.dto.DadosDetalharTreinoDTO;
+import com.dtplan.domain.treino.dto.EditarTreinoDTO;
+import com.dtplan.domain.treino.dto.DetalharTreinoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,16 +18,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.dtplan.domain.treino.dto.CadastroTreinoDTO;
 import com.dtplan.domain.treino.dto.ListarTreinoDTO;
 import com.dtplan.domain.treino.TreinoRepository;
-import jakarta.transaction.Transactional;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/treinos")
-public class TreinoController {
-	
-	@Autowired
-	private TreinoRepository treinoRepository;
+	public class TreinoController {
+
+		@Autowired
+		private TreinoRepository treinoRepository;
 	@Autowired
 	private FichaRepository fichaRepository;
 
@@ -36,9 +36,17 @@ public class TreinoController {
 	private TreinoService treinoService;
 
 	@PostMapping("/criar")
-	@Transactional
-	public CadastroTreinoDTO cadastrar(@RequestBody CadastroTreinoDTO dados, UriComponentsBuilder uriBuilder) {
-		return treinoService.cadastrarTreino(dados);
+	public ResponseEntity<CadastroTreinoDTO> cadastrar(@RequestBody CadastroTreinoDTO dados, UriComponentsBuilder uriBuilder) {
+		var dto = treinoService.cadastrarTreino(dados);
+
+		return ResponseEntity.ok(dto);
+	}
+
+	@PutMapping("/editar/{id}")
+	public ResponseEntity<DetalharTreinoDTO> editar(@PathVariable long id, @RequestBody EditarTreinoDTO dados) {
+		var dto = treinoService.editarTreno(id, dados);
+
+		return ResponseEntity.ok(dto);
 	}
 	
 	@GetMapping("/listar")
@@ -53,7 +61,7 @@ public class TreinoController {
 		Treino treino = treinoRepository.findById(id).orElseThrow(() -> new RuntimeException("Treino não encontrado"));
 		List<Ficha> fichas = fichaRepository.findByTreinoId(treino.getId());
 
-		DadosDetalharTreinoDTO detalhesTreino = new DadosDetalharTreinoDTO(treino, fichas);
+		DetalharTreinoDTO detalhesTreino = new DetalharTreinoDTO(treino, fichas);
 		return ResponseEntity.ok(detalhesTreino);
 	}
 }

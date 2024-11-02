@@ -1,6 +1,7 @@
 package com.dtplan.domain.treino;
 
 import com.dtplan.domain.treino.dto.CadastroTreinoDTO;
+import com.dtplan.domain.treino.dto.EditarTreinoDTO;
 import com.dtplan.domain.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,5 +35,17 @@ public class Treino {
         this.autor = dados.autor();
         this.tipo = dados.tipo();
         this.usuario = dados.usuario();
+    }
+
+    public void atualizarInformacoes(EditarTreinoDTO dados) {
+        if (descricao != null) {
+            this.descricao = dados.descricao();
+        }
+        if (autor != null) {
+            this.autor = dados.autor();
+        }
+        if (tipo != null) {
+            this.tipo = Tipo.valueOf(dados.tipo());
+        }
     }
 }

@@ -32,38 +32,42 @@ public class ExercicioController {
     @PostMapping
     public ResponseEntity<DetalharExercicioDTO> cadastrar(@RequestBody CadastrarExercicioDTO dados, UriComponentsBuilder uriBuilder) {
         var dto = exercicioService.cadastrarExercicio(dados);
-        var uri = uriBuilder.path("/exercicios/{id}").buildAndExpand(dto.id()).toUri();
 
-        return ResponseEntity.created(uri).body(dto);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping
     public ResponseEntity<Page<ListarExerciciosDTO>> listar(@PageableDefault(size = 200, sort = {"nome"}) Pageable paginacao) {
         var page = exercicioService.listarExercicios(paginacao);
+
         return ResponseEntity.ok(page);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<DetalharExercicioDTO> detalhar(@PathVariable long id) {
         var dto = exercicioService.detalharExercicio(id);
+
         return ResponseEntity.ok(dto);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<DetalharExercicioDTO> atualizar(@PathVariable long id, @RequestBody EditarExercicioDTO dados) {
         var dto = exercicioService.atualizarExercicio(id, dados);
+
         return ResponseEntity.ok(dto);
     }
 
     @PutMapping("/inativar/{id}")
     public ResponseEntity<Void> inativar(@PathVariable long id) {
         exercicioService.inativarExercicio(id);
+
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable long id) {
         exercicioService.excluirExercicio(id);
+
         return ResponseEntity.noContent().build();
     }
 }
