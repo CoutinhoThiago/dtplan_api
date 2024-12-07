@@ -19,7 +19,9 @@ public class UsuarioController {
     @PostMapping("/cadastrar")
     //@Transactional
     public ResponseEntity cadastrarUsuario(@RequestBody /*@Valid*/ CadastrarUsuarioDTO dados) {
-        return usuarioService.cadastrarUsuario(dados);
+        var dto = usuarioService.cadastrarUsuario(dados);
+
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/detalhar")

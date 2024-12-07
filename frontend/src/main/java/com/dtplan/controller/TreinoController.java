@@ -25,8 +25,9 @@ import java.util.List;
 @RequestMapping("/treinos")
 	public class TreinoController {
 
-		@Autowired
-		private TreinoRepository treinoRepository;
+	@Autowired
+	private TreinoRepository treinoRepository;
+
 	@Autowired
 	private FichaRepository fichaRepository;
 
@@ -51,17 +52,15 @@ import java.util.List;
 	
 	@GetMapping("/listar")
     public ResponseEntity<Page<ListarTreinoDTO>> listar(@PageableDefault(size = 10) Pageable paginacao) {
-		var page = treinoRepository.findAll(paginacao).map(ListarTreinoDTO::new);
+		var page = treinoService.listarTrenos(paginacao);
 		
 		return ResponseEntity.ok(page);
     }
 
 	@GetMapping("/detalhar/{id}")
 	public ResponseEntity<?> detalhar(@PathVariable long id) {
-		Treino treino = treinoRepository.findById(id).orElseThrow(() -> new RuntimeException("Treino não encontrado"));
-		List<Ficha> fichas = fichaRepository.findByTreinoId(treino.getId());
+		var dto = treinoService.detalharTreno(id);
 
-		DetalharTreinoDTO detalhesTreino = new DetalharTreinoDTO(treino, fichas);
-		return ResponseEntity.ok(detalhesTreino);
+		return ResponseEntity.ok(dto);
 	}
 }

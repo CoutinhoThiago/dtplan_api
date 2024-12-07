@@ -35,7 +35,8 @@ public class RefeicaoController {
 
 	@PostMapping
 	public ResponseEntity<DetalharRefeicaoDTO> cadastrar(@RequestBody CadastrarRefeicaoDTO dados, UriComponentsBuilder uriBuilder) {
-		var dto = refeicaoService.cadastrar(dados); // Certifique-se de que há um método 'cadastrar' no serviço
+		var dto = refeicaoService.cadastrar(dados);
+
 		return ResponseEntity.ok(dto);
 	}
 
@@ -43,6 +44,7 @@ public class RefeicaoController {
 	@GetMapping("/listar")
 	public ResponseEntity<Page<ListarRefeicaoDTO>> listarTodas(@PageableDefault(size = 10) Pageable paginacao) {
 		var dto = refeicaoService.listarRefeicoes(paginacao);
+
 		return ResponseEntity.ok(dto);
 	}
 
