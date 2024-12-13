@@ -1,7 +1,9 @@
 package com.dtplan.domain.dieta;
 
+import com.dtplan.domain.alimento.Alimento;
 import com.dtplan.domain.dieta.dto.CadastrarDietaDTO;
 import com.dtplan.domain.dieta.dto.EditarDietaDTO;
+import com.dtplan.domain.refeicao.Refeicao;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,7 @@ public class DietaService {
 
         dietaRepository.save(dieta);
 
-        return new EditarDietaDTO(dieta.getDescricao(), dieta.getAutor(), dieta.getTipo(), dieta.getUsuario(), dieta.getCalorias(), dieta.getProteina(), dieta.getGordura(), dieta.getCarboidrato());
+        return new EditarDietaDTO(dieta.getDescricao(), dieta.getAutor(), dieta.getTipo(), dieta.getUsuario(), dieta.getCalorias(), dieta.getProteina(), dieta.getGordura(), dieta.getCarboidrato(), dieta.getFibraAlimentar());
     }
 }
 

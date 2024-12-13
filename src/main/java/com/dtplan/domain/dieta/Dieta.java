@@ -1,16 +1,20 @@
 package com.dtplan.domain.dieta;
 
+import com.dtplan.domain.alimento.Alimento;
 import com.dtplan.domain.dieta.dto.CadastrarDietaDTO;
 import com.dtplan.domain.dieta.dto.EditarDietaDTO;
 import com.dtplan.domain.refeicao.Refeicao;
 import com.dtplan.domain.refeicao.RefeicaoRepository;
 import com.dtplan.domain.usuario.Usuario;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "dietas")
@@ -33,10 +37,11 @@ public class Dieta {
     @JoinColumn(name = "usuario_id") // , nullable = false)
     private Usuario usuario;
 
-    private Float calorias;
-    private Float proteina;
-    private Float gordura;
-    private Float carboidrato;
+    private Float calorias; //kcal //Energia:
+    private Float proteina;//g
+    private Float gordura; //lipideos //g
+    private Float carboidrato; //g
+    private Float fibraAlimentar; //g
 
     @ManyToMany
     @JoinTable(
@@ -66,22 +71,48 @@ public class Dieta {
         if (dados.usuario() != null) {
             this.usuario = dados.usuario();
         }
+    }
 
-        if (dados.calorias() != null) {
-            this.calorias = dados.calorias();
+    public void atualizarNutrientesDieta(Dieta dieta) {
+        float totalCalorias = 0;
+        float totalProteina = 0;
+        float totalGordura = 0;
+        float totalCarboidrato = 0;
+        float totalFibraAlimentar = 0;
+
+        if (dieta.getRefeicoes() != null) {
+            for (Refeicao refeicao : dieta.getRefeicoes()) {
+                totalCalorias += refeicao.getCalorias();
+                totalProteina += refeicao.getProteina();
+                totalGordura += refeicao.getGordura();
+                totalCarboidrato += refeicao.getCarboidrato();
+                totalFibraAlimentar += refeicao.getFibraAlimentar();
+            }
         }
-        if (dados.proteina() != null) {
-            this.proteina = dados.proteina();
-        }
-        if (dados.gordura() != null) {
-            this.gordura = dados.gordura();
-        }
-        if (dados.carboidrato() != null) {
-            this.carboidrato = dados.carboidrato();
+
+        dieta.calorias = totalCalorias;
+        dieta.proteina = totalProteina;
+        dieta.gordura = totalGordura;
+        dieta.carboidrato = totalCarboidrato;
+        dieta.fibraAlimentar = totalFibraAlimentar;
+    }
+
+    @Transactional
+    public void adicionarRefeicaoNaDieta(Dieta dieta, Refeicao refeicao) {
+        dieta.getRefeicoes().add(refeicao);
+        atualizarNutrientesDieta(dieta);
+    }
+
+    @Transactional
+    public void removerRefeicaoDaDieta(Dieta dieta, Refeicao refeicao) {
+        if (dieta.getRefeicoes() != null) {
+            dieta.getRefeicoes().remove(refeicao);
+            atualizarNutrientesDieta(dieta);
         }
     }
 
-    public void adicionarRefeicoesPorIds(List<Long> idsRefeicoes, RefeicaoRepository refeicaoRepository) {
+
+public void adicionarRefeicoesPorIds(List<Long> idsRefeicoes, RefeicaoRepository refeicaoRepository) {
         List<Refeicao> refeicoesNovas = refeicaoRepository.findByIdIn(idsRefeicoes);
         if (this.refeicoes == null) {
             this.refeicoes = refeicoesNovas; // Inicializa a lista se estiver vazia

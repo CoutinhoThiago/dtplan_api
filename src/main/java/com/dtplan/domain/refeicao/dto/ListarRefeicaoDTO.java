@@ -4,25 +4,26 @@ import com.dtplan.domain.alimento.Alimento;
 import com.dtplan.domain.alimento.dto.ListarAlimentosDTO;
 import com.dtplan.domain.exercicio.Exercicio;
 import com.dtplan.domain.refeicao.Refeicao;
+import com.dtplan.domain.refeicao.RefeicaoAlimento;
 
 import java.util.List;
 
 public record ListarRefeicaoDTO(
         Long id,
-        String nome,
+        String descricao,
 
         Long dietaId,
 
-        List<Alimento> alimentos
+        List<RefeicaoAlimento> refeicaoAlimentos
 ) {
     public ListarRefeicaoDTO(Refeicao refeicao) {
         this(
                 refeicao.getId(),
-                refeicao.getNome(),
+                refeicao.getDescricao(),
 
                 refeicao.getDieta().getId(),
 
-                refeicao.getAlimentos().stream().toList()
+                refeicao.getRefeicaoAlimentos().stream().toList()
         );
     }
 }

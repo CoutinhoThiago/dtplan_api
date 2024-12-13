@@ -1,5 +1,7 @@
 package com.dtplan.domain.refeicao;
 
+import com.dtplan.domain.alimento.Alimento;
+import com.dtplan.domain.alimento.AlimentoRepository;
 import com.dtplan.domain.dieta.Dieta;
 import com.dtplan.domain.dieta.DietaRepository;
 import com.dtplan.domain.exercicio.Exercicio;
@@ -35,20 +37,24 @@ public class RefeicaoService {
     @Autowired
     DietaRepository dietaRepository;
 
+    @Autowired
+    AlimentoRepository alimentoRepository;
+
     public Page<ListarRefeicaoDTO> listarRefeicoes(Pageable paginacao) {
         return refeicoesRepository.findAll(paginacao).map(ListarRefeicaoDTO::new);
     }
 
     public DetalharRefeicaoDTO cadastrar(CadastrarRefeicaoDTO dados) {
         Dieta dieta = dietaRepository.findById(dados.dieta()).orElseThrow(() -> new RuntimeException("Dieta não encontrada!"));
-        Refeicao refeicao = new Refeicao(dados.nome(), dieta, null);
+        Refeicao refeicao = new Refeicao(dados.descricao(), dieta);
 
-        // Adiciona alimentos, se existirem
-        if (dados.alimentos() != null) {
-            refeicao.getAlimentos().addAll(dados.alimentos());
+        for (RefeicaoAlimento refeicaoAlimento : dados.refeicaoAlimentos()) {
+            Optional<Alimento> alimentoOpt = alimentoRepository.findById(refeicaoAlimento.getId());
+            Alimento alimento = alimentoOpt.get();
+            Float quantidade = refeicaoAlimento.getQuantidade();
+            refeicao.adicionarAlimento(refeicao, alimento, quantidade);
         }
 
-        // Salva a refeição no repositório
         Refeicao refeicaoSalva = refeicoesRepository.save(refeicao);
 
         // Retorna um DTO com os detalhes da refeição criada
@@ -70,9 +76,30 @@ public class RefeicaoService {
         Optional<Refeicao> refeicaoOpt = refeicoesRepository.findById(id);
         if (refeicaoOpt.isPresent()) {
             Refeicao refeicao = refeicaoOpt.get();
-            // Atualiza os campos da refeição
-            //refeicao.setNome(dados.descricao());
-            // Atualize outros campos conforme necessário
+
+            // Processa a lista de alimentos para adicionar ou atualizar
+            List<Long> novosIds = dados.refeicaoAlimentos().stream()
+                    .map(RefeicaoAlimento::getId)
+                    .toList();
+
+            // Remove os alimentos que não estão na nova lista
+            refeicao.getRefeicaoAlimentos().removeIf(ra -> !novosIds.contains(ra.getAlimento().getId()));
+
+            // Adiciona ou atualiza os alimentos
+            for (RefeicaoAlimento refeicaoAlimento : dados.refeicaoAlimentos()) {
+                Alimento alimento = alimentoRepository.findById(refeicaoAlimento.getId())
+                        .orElseThrow(() -> new RuntimeException("Alimento não encontrado!"));
+
+                Float quantidade = refeicaoAlimento.getQuantidade();
+
+                // Adiciona o alimento na refeição, atualizando a quantidade
+                refeicao.adicionarAlimento(refeicao, alimento, quantidade);
+            }
+
+            // Atualiza a descrição da refeição, se necessário
+            refeicao.setDescricao(dados.descricao());
+
+            // Salva as alterações da refeição no repositório
             refeicoesRepository.save(refeicao);
         } else {
             throw new RuntimeException("Refeição não encontrada."); // ou use uma exceção personalizada
@@ -80,9 +107,16 @@ public class RefeicaoService {
     }
 
     public void deletar(Long id) {
-        // Remove a refeição pelo ID
-        if (refeicoesRepository.existsById(id)) {
-            refeicoesRepository.deleteById(id);
+        // Verifica se a refeição existe
+        Optional<Refeicao> refeicaoOpt = refeicoesRepository.findById(id);
+        if (refeicaoOpt.isPresent()) {
+            Refeicao refeicao = refeicaoOpt.get();
+
+            // Remove todas as associações RefeicaoAlimento vinculadas à refeição
+            //refeicao.removerAlimento(refeicao, refeicao.getRefeicaoAlimentos().);
+
+            // Remove a refeição do repositório
+            refeicoesRepository.delete(refeicao);
         } else {
             throw new RuntimeException("Refeição não encontrada."); // ou use uma exceção personalizada
         }

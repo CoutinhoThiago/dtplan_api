@@ -211,14 +211,14 @@ public class DataInitializer implements CommandLineRunner {
 
         if (alimentoRepository.count() == 0) {
             List<Alimento> alimentos = List.of(
-                    new Alimento("Frango grelhado"),
-                    new Alimento("Arroz integral"),
-                    new Alimento("Batata doce"),
-                    new Alimento("Ovos"),
-                    new Alimento("Iogurte"),
-                    new Alimento("Banana"),
-                    new Alimento("Aveia"),
-                    new Alimento("Peito de peru")
+                    new Alimento("Frango grelhado", 0f, 0f, 0f, 0f, 0f),
+                    new Alimento("Arroz integral", 0f, 0f, 0f, 0f, 0f),
+                    new Alimento("Batata doce", 0f, 0f, 0f, 0f, 0f),
+                    new Alimento("Ovos", 0f, 0f, 0f, 0f, 0f),
+                    new Alimento("Iogurte", 0f, 0f, 0f, 0f, 0f),
+                    new Alimento("Banana", 0f, 0f, 0f, 0f, 0f),
+                    new Alimento("Aveia", 0f, 0f, 0f, 0f, 0f),
+                    new Alimento("Peito de peru", 0f, 0f, 0f, 0f, 0f)
             );
             alimentoRepository.saveAll(alimentos);
             System.out.println("Alimentos cadastrados com sucesso!");
@@ -260,8 +260,8 @@ public class DataInitializer implements CommandLineRunner {
             Dieta dieta = dietaOpt.get();
 
             List<Refeicao> refeicoes = List.of(
-                    new Refeicao("Café da manhã", dieta, null),
-                    new Refeicao("Almoço", dieta, null)
+                    new Refeicao("Café da manhã", dieta),
+                    new Refeicao("Almoço", dieta)
             );
 
             refeicaoRepository.saveAll(refeicoes); // Salva a lista de Refeição

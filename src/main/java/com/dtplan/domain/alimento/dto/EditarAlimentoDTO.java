@@ -1,6 +1,6 @@
 package com.dtplan.domain.alimento.dto;
 
-public record CadastrarAlimentoDTO (
+public record EditarAlimentoDTO(
         String nome,
         Float calorias,
         Float proteina,

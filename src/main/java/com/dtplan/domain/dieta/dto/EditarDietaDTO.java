@@ -12,5 +12,8 @@ public record EditarDietaDTO(
         Float calorias,
         Float proteina,
         Float gordura,
-        Float carboidrato
-) { }
+        Float carboidrato,
+        Float fibraAlimentar
+) {
+
+}
