@@ -16,18 +16,10 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @PostMapping("/cadastrar")
+    @PostMapping("/criar")
     //@Transactional
     public ResponseEntity cadastrarUsuario(@RequestBody /*@Valid*/ CadastrarUsuarioDTO dados) {
         return usuarioService.cadastrarUsuario(dados);
-    }
-
-    @GetMapping("/detalhar")
-    //@SecurityRequirement(name = "bearer-key")
-    public ResponseEntity<ResponseEntity> detalharUsuario(@RequestHeader("Authorization") String authorizationHeader) {
-        var dto = usuarioService.detalharUsuario(authorizationHeader);
-
-        return ResponseEntity.ok(dto);
     }
 
     @PutMapping("/editar")
@@ -48,4 +40,11 @@ public class UsuarioController {
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping("/detalhar")
+    //@SecurityRequirement(name = "bearer-key")
+    public ResponseEntity<ResponseEntity> detalharUsuario(@RequestHeader("Authorization") String authorizationHeader) {
+        var dto = usuarioService.detalharUsuario(authorizationHeader);
+
+        return ResponseEntity.ok(dto);
+    }
 }

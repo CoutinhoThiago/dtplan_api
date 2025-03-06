@@ -6,18 +6,21 @@ import com.dtplan.domain.usuario.Usuario;
 
 public record ListarTreinoDTO(
 		Long id,
+		String nome,
 		String descricao,
 		String autor,
-		String usuario,
-		Tipo tipo
+		String usuario
+		//Tipo tipo
 ) {
 	public ListarTreinoDTO(Treino treino) {
 		this(
 				treino.getId(),
+				treino.getNome(),
 				treino.getDescricao(),
 				treino.getAutor(),
-				treino.getUsuario().getNome(),
-				treino.getTipo()
+				treino.getUsuario().getNome()
+
+				//treino.getTipo()
 		);
 	}
 }

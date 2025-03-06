@@ -1,7 +1,7 @@
-package com.dtplan.domain.refeicao;
+package com.dtplan.domain.refeicaoAlimento;
 
 import com.dtplan.domain.alimento.Alimento;
-import com.dtplan.domain.dieta.Dieta;
+import com.dtplan.domain.refeicao.Refeicao;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -29,9 +29,9 @@ public class RefeicaoAlimento {
     @JoinColumn(name = "alimento_id", nullable = false)
     private Alimento alimento;
 
-    private Float quantidade; // Quantidade do alimento na refeição (em gramas, por exemplo)
+    private double quantidade; // Quantidade do alimento na refeição (em gramas, por exemplo)
 
-    public RefeicaoAlimento(Refeicao refeicao, Alimento alimento, Float quantidade) {
+    public RefeicaoAlimento(Refeicao refeicao, Alimento alimento, double quantidade) {
         this.refeicao = refeicao;
         this.alimento = alimento;
         this.quantidade = quantidade;

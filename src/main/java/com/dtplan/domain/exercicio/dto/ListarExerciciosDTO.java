@@ -9,13 +9,8 @@ public record ListarExerciciosDTO(
 		boolean ativo,
 		int tipo,
 		String observacao,
-		String musculo_alvo,
-		int series,
-		int repeticoes_min,
-		int repeticoes_max,
-		double carga,
-		int duracao_minutos,
-		int intensidade) {
+		String musculo_alvo
+) {
 	public ListarExerciciosDTO(Exercicio exercicio) {
 		this(
 				exercicio.getId(), 
@@ -24,14 +19,7 @@ public record ListarExerciciosDTO(
 				exercicio.getTipo(),
 				exercicio.getObservacoes(),
 
-				exercicio.getMusculo_alvo(),
-				exercicio.getSeries(),
-				exercicio.getRepeticoes_max(),
-				exercicio.getRepeticoes_max(),
-				exercicio.getCarga(),
-
-				exercicio.getDuracao_minutos(),
-				exercicio.getIntensidade()
+				exercicio.getMusculo_alvo()
 				);
 	}
 }

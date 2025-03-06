@@ -1,5 +1,6 @@
 package com.dtplan.domain.usuario;
 
+import com.dtplan.domain.treino.Treino;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -49,6 +50,9 @@ public class Usuario implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Objetivo objetivo;
+
+    @OneToMany(mappedBy = "usuario")
+    private List<Treino> treinos;
 
     public Usuario(String email, String senha, Permissao permissao, String nome, String cpf) {
         this.nome = nome;

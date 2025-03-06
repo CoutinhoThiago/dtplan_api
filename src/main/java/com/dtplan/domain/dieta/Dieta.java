@@ -3,6 +3,7 @@ package com.dtplan.domain.dieta;
 import com.dtplan.domain.alimento.Alimento;
 import com.dtplan.domain.dieta.dto.CadastrarDietaDTO;
 import com.dtplan.domain.dieta.dto.EditarDietaDTO;
+import com.dtplan.domain.ficha.Ficha;
 import com.dtplan.domain.refeicao.Refeicao;
 import com.dtplan.domain.refeicao.RefeicaoRepository;
 import com.dtplan.domain.usuario.Usuario;
@@ -43,12 +44,7 @@ public class Dieta {
     private Float carboidrato; //g
     private Float fibraAlimentar; //g
 
-    @ManyToMany
-    @JoinTable(
-            name = "dietas_refeicoes",
-            joinColumns = @JoinColumn(name = "dieta_id"),
-            inverseJoinColumns = @JoinColumn(name = "refeicao_id")
-    )
+    @OneToMany(mappedBy = "dieta")
     private List<Refeicao> refeicoes;
 
     public Dieta(CadastrarDietaDTO dados) {

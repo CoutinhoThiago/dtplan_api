@@ -46,10 +46,9 @@ public class RefeicaoController {
 		return ResponseEntity.ok(dto);
 	}
 
-	@GetMapping("/listar/{id}")
+	@GetMapping("/detalhar/{id}")
 	public ResponseEntity<DetalharRefeicaoDTO> detalhar(@PathVariable long id) {
 		var dto = refeicaoService.detalharRefeicao(id);
-
 		return ResponseEntity.ok(dto);
 	}
 }

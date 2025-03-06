@@ -1,6 +1,7 @@
 package com.dtplan.domain.treino.dto;
 
 import com.dtplan.domain.ficha.Ficha;
+import com.dtplan.domain.ficha.dto.ListarFichaDTO;
 import com.dtplan.domain.treino.Tipo;
 import com.dtplan.domain.treino.Treino;
 import com.dtplan.domain.usuario.Usuario;
@@ -9,25 +10,27 @@ import java.util.List;
 
 public record DetalharTreinoDTO(
 		long id,
+		String nome,
 		String descricao,
 		String autor,
-		Tipo tipo,
+		//Tipo tipo,
 
-		Usuario usuario,
+		//Usuario usuario,
 
-		List<Ficha> fichas
+		List<ListarFichaDTO> fichas
 ) {
 
-	public DetalharTreinoDTO(Treino treino, List<Ficha> fichas) {
+	public DetalharTreinoDTO(Treino treino, List<ListarFichaDTO> fichas) {
 		this(
 				treino.getId(),
+				treino.getNome(),
 				treino.getDescricao(),
 				treino.getAutor(),
-				treino.getTipo(),
+				//treino.getTipo(),
 
-				treino.getUsuario(),
+				//treino.getUsuario(),
 
-				fichas.stream().toList()
+				fichas
         );
 	}
 }

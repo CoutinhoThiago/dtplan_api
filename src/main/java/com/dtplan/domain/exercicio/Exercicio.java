@@ -35,14 +35,8 @@ public class Exercicio {
     private Integer tipo;
 
     private String musculo_alvo;
-    private Integer series;
-    private Integer repeticoes_min;
-    private Integer repeticoes_max;
-    private Integer carga;
 
-    private Integer duracao_minutos;
 
-    private Integer intensidade;
 
     public Exercicio(CadastrarExercicioDTO dados) {
         this.nome = dados.nome();
@@ -52,14 +46,6 @@ public class Exercicio {
         this.observacoes = dados.observacoes();
 
         this.musculo_alvo = dados.musculo_alvo();
-        this.series = dados.series();
-        this.repeticoes_min = dados.repeticoes_min();
-        this.repeticoes_max = dados.repeticoes_max();
-        this.carga = dados.carga();
-
-        this.duracao_minutos = dados.duracao_minutos();
-        this.intensidade = dados.intensidade();
-
     }
 
     public void atualizarInformacoes(EditarExercicioDTO dados) {

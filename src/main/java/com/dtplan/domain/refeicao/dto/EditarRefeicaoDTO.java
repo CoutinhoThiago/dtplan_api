@@ -1,7 +1,6 @@
 package com.dtplan.domain.refeicao.dto;
 
-import com.dtplan.domain.alimento.Alimento;
-import com.dtplan.domain.refeicao.RefeicaoAlimento;
+import com.dtplan.domain.refeicaoAlimento.RefeicaoAlimento;
 
 import java.util.List;
 

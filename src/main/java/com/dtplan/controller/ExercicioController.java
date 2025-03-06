@@ -29,29 +29,15 @@ public class ExercicioController {
     @Autowired
     private ExercicioService exercicioService;
 
-    @PostMapping
+    @PostMapping("/criar")
     public ResponseEntity<DetalharExercicioDTO> cadastrar(@RequestBody CadastrarExercicioDTO dados, UriComponentsBuilder uriBuilder) {
         var dto = exercicioService.cadastrarExercicio(dados);
 
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping
-    public ResponseEntity<Page<ListarExerciciosDTO>> listar(@PageableDefault(size = 200, sort = {"nome"}) Pageable paginacao) {
-        var page = exercicioService.listarExercicios(paginacao);
-
-        return ResponseEntity.ok(page);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<DetalharExercicioDTO> detalhar(@PathVariable long id) {
-        var dto = exercicioService.detalharExercicio(id);
-
-        return ResponseEntity.ok(dto);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<DetalharExercicioDTO> atualizar(@PathVariable long id, @RequestBody EditarExercicioDTO dados) {
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<DetalharExercicioDTO> editar(@PathVariable long id, @RequestBody EditarExercicioDTO dados) {
         var dto = exercicioService.atualizarExercicio(id, dados);
 
         return ResponseEntity.ok(dto);
@@ -64,10 +50,24 @@ public class ExercicioController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/excluir/{id}")
     public ResponseEntity<Void> excluir(@PathVariable long id) {
         exercicioService.excluirExercicio(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/listar")
+    public ResponseEntity<Page<ListarExerciciosDTO>> listar(@PageableDefault(size = 200, sort = {"nome"}) Pageable paginacao) {
+        var page = exercicioService.listarExercicios(paginacao);
+
+        return ResponseEntity.ok(page);
+    }
+
+    @GetMapping("/detalhar/{id}")
+    public ResponseEntity<DetalharExercicioDTO> detalhar(@PathVariable long id) {
+        var dto = exercicioService.detalharExercicio(id);
+
+        return ResponseEntity.ok(dto);
     }
 }

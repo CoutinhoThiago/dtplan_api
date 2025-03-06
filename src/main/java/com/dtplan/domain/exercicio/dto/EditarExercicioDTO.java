@@ -15,14 +15,7 @@ public record EditarExercicioDTO(
 		//@NotNull
 		String observacao,
 	    
-	    String musculo_alvo,
-	    int series,
-	    int repeticoes_min,
-	    int repeticoes_max,
-	    double carga,
-	    
-	    int duracao_minutos,
-	    int intensidade
+	    String musculo_alvo
 	) {
 
 

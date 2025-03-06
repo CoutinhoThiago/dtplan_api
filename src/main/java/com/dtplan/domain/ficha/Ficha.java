@@ -1,24 +1,18 @@
 package com.dtplan.domain.ficha;
 
 import com.dtplan.domain.exercicio.Exercicio;
-import com.dtplan.domain.exercicio.ExercicioRepository;
-import com.dtplan.domain.exercicio.dto.EditarExercicioDTO;
-import com.dtplan.domain.ficha.dto.CadastrarFichaDTO;
+import com.dtplan.domain.fichaExercicio.FichaExercicio;
 import com.dtplan.domain.treino.Treino;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Table(name = "fichas")
 @Entity(name = "Ficha")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
@@ -31,29 +25,33 @@ public class Ficha {
     //private String observacoes;
 
     @ManyToOne
-    @JoinColumn(name = "treino_id") // , nullable = false)
+    @JoinColumn(name = "treino_id")
     private Treino treino;
 
-    @ManyToMany
-    @JoinTable(
-            name = "fichas_exercicios", // Nome da tabela de junção
-            joinColumns = @JoinColumn(name = "fichas_id"), // Coluna na tabela de junção que aponta para a chave primária da entidade Ficha
-            inverseJoinColumns = @JoinColumn(name = "exercicios_id") // Coluna na tabela de junção que aponta para a chave primária da entidade Exercicio
-    )
-    private List<Exercicio> exercicios = new ArrayList<>();
+    @OneToMany(mappedBy = "ficha")
+    private List<FichaExercicio> fichaExercicios;
 
 
-    public Ficha(String nome, Treino  treino,  List<Exercicio> exercicios) {
+    public Ficha(String nome, Treino  treino) {
         this.nome = nome;
         this.treino = treino;
-        this.exercicios = exercicios;
     }
     public void atualizarInformacoes(String nome, List<Exercicio> exercicios) {
         if (nome != null) {
             this.nome = nome;
         }
-        if (exercicios != null) {
-            this.exercicios = exercicios;
+    }
+
+    public void adicionarExercicios(List<Exercicio> exercicios) {
+        if (this.fichaExercicios == null) {
+            this.fichaExercicios = new ArrayList<>();
+        }
+
+        for (Exercicio exercicio : exercicios) {
+            FichaExercicio fichaExercicio = new FichaExercicio();
+            fichaExercicio.setExercicio(exercicio);
+            fichaExercicio.setFicha(this);
+            this.fichaExercicios.add(fichaExercicio);
         }
     }
 }

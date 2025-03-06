@@ -4,21 +4,13 @@ import com.dtplan.domain.alimento.Alimento;
 import com.dtplan.domain.alimento.AlimentoRepository;
 import com.dtplan.domain.dieta.Dieta;
 import com.dtplan.domain.dieta.DietaRepository;
-import com.dtplan.domain.exercicio.Exercicio;
-import com.dtplan.domain.exercicio.ExercicioRepository;
-import com.dtplan.domain.ficha.Ficha;
-import com.dtplan.domain.ficha.FichaRepository;
-import com.dtplan.domain.ficha.dto.CadastrarFichaDTO;
-import com.dtplan.domain.ficha.dto.DetalharFichaDTO;
-import com.dtplan.domain.ficha.dto.EditarFichaDTO;
-import com.dtplan.domain.ficha.dto.ListarFichaDTO;
 import com.dtplan.domain.refeicao.dto.CadastrarRefeicaoDTO;
 import com.dtplan.domain.refeicao.dto.DetalharRefeicaoDTO;
 import com.dtplan.domain.refeicao.dto.EditarRefeicaoDTO;
 import com.dtplan.domain.refeicao.dto.ListarRefeicaoDTO;
-import com.dtplan.domain.treino.Treino;
-import com.dtplan.domain.treino.TreinoRepository;
-import jakarta.transaction.Transactional;
+import com.dtplan.domain.refeicaoAlimento.RefeicaoAlimento;
+import com.dtplan.domain.refeicaoAlimento.RefeicaoAlimentoRepository;
+import com.dtplan.domain.refeicaoAlimento.dto.RefeicaoAlimentoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,8 +32,22 @@ public class RefeicaoService {
     @Autowired
     AlimentoRepository alimentoRepository;
 
+    @Autowired
+    RefeicaoAlimentoRepository refeicaoAlimentoRepository;
+
     public Page<ListarRefeicaoDTO> listarRefeicoes(Pageable paginacao) {
-        return refeicoesRepository.findAll(paginacao).map(ListarRefeicaoDTO::new);
+        // Busca todas as refeições paginadas
+        Page<Refeicao> refeicoesPage = refeicoesRepository.findAll(paginacao);
+
+        // Para cada refeição, busca os alimentos associados e cria um ListarRefeicaoDTO
+        return refeicoesPage.map(refeicao -> {
+            List<RefeicaoAlimento> refeicaoAlimentos = refeicaoAlimentoRepository.findByRefeicaoId(refeicao.getId());
+            List<RefeicaoAlimentoDTO> refeicaoAlimentosDTO = refeicaoAlimentos.stream()
+                    .map(RefeicaoAlimentoDTO::new)
+                    .toList();
+
+            return new ListarRefeicaoDTO(refeicao, refeicaoAlimentosDTO);
+        });
     }
 
     public DetalharRefeicaoDTO cadastrar(CadastrarRefeicaoDTO dados) {
@@ -51,21 +57,37 @@ public class RefeicaoService {
         for (RefeicaoAlimento refeicaoAlimento : dados.refeicaoAlimentos()) {
             Optional<Alimento> alimentoOpt = alimentoRepository.findById(refeicaoAlimento.getId());
             Alimento alimento = alimentoOpt.get();
-            Float quantidade = refeicaoAlimento.getQuantidade();
+            double quantidade = refeicaoAlimento.getQuantidade();
             refeicao.adicionarAlimento(refeicao, alimento, quantidade);
         }
 
         Refeicao refeicaoSalva = refeicoesRepository.save(refeicao);
 
+        List<RefeicaoAlimento> refeicaoAlimentos = refeicaoAlimentoRepository.findByRefeicaoId(refeicao.getId());
+        List<RefeicaoAlimentoDTO> refeicaoAlimentosDTO = refeicaoAlimentos.stream()
+                .map(RefeicaoAlimentoDTO::new)
+                .toList();
+
         // Retorna um DTO com os detalhes da refeição criada
-        return new DetalharRefeicaoDTO(refeicaoSalva);
+        return new DetalharRefeicaoDTO(refeicaoSalva, refeicaoAlimentosDTO);
     }
 
     public DetalharRefeicaoDTO detalharRefeicao(Long id) {
         // Busca a refeição pelo ID
         Optional<Refeicao> refeicaoOpt = refeicoesRepository.findById(id);
         if (refeicaoOpt.isPresent()) {
-            return new DetalharRefeicaoDTO(refeicaoOpt.get());
+            Refeicao refeicao = refeicaoOpt.get();
+
+            // Busca os alimentos associados à refeição
+            List<RefeicaoAlimento> refeicaoAlimentos = refeicaoAlimentoRepository.findByRefeicaoId(refeicao.getId());
+
+            // Mapeia RefeicaoAlimento para RefeicaoAlimentoDTO
+            List<RefeicaoAlimentoDTO> refeicaoAlimentosDTO = refeicaoAlimentos.stream()
+                    .map(RefeicaoAlimentoDTO::new)
+                    .toList();
+
+            // Retorna o DTO detalhado da refeição
+            return new DetalharRefeicaoDTO(refeicao, refeicaoAlimentosDTO);
         } else {
             throw new RuntimeException("Refeição não encontrada."); // ou use uma exceção personalizada
         }
@@ -90,7 +112,7 @@ public class RefeicaoService {
                 Alimento alimento = alimentoRepository.findById(refeicaoAlimento.getId())
                         .orElseThrow(() -> new RuntimeException("Alimento não encontrado!"));
 
-                Float quantidade = refeicaoAlimento.getQuantidade();
+                double quantidade = refeicaoAlimento.getQuantidade();
 
                 // Adiciona o alimento na refeição, atualizando a quantidade
                 refeicao.adicionarAlimento(refeicao, alimento, quantidade);

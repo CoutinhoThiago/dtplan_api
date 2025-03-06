@@ -7,6 +7,12 @@ import com.dtplan.domain.dieta.dto.CadastrarDietaDTO;
 import com.dtplan.domain.dieta.dto.DetalharDietaDTO;
 import com.dtplan.domain.dieta.dto.EditarDietaDTO;
 import com.dtplan.domain.dieta.dto.ListarDietaDTO;
+import com.dtplan.domain.refeicao.Refeicao;
+import com.dtplan.domain.refeicao.RefeicaoRepository;
+import com.dtplan.domain.refeicao.dto.ListarRefeicaoDTO;
+import com.dtplan.domain.refeicaoAlimento.RefeicaoAlimento;
+import com.dtplan.domain.refeicaoAlimento.RefeicaoAlimentoRepository;
+import com.dtplan.domain.refeicaoAlimento.dto.RefeicaoAlimentoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,15 +21,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("/dietas")
-	public class DietaController {
+public class DietaController {
 
 	@Autowired
 	private DietaRepository dietaRepository;
+	@Autowired
+	private RefeicaoRepository refeicaoRepository;
 
 	@Autowired
 	private DietaService dietaService;
+
+	@Autowired
+	private RefeicaoAlimentoRepository refeicaoAlimentoRepository;
+
 
 	@PostMapping("/criar")
 	public ResponseEntity<CadastrarDietaDTO> cadastrar(@RequestBody CadastrarDietaDTO dados, UriComponentsBuilder uriBuilder) {
@@ -38,19 +53,64 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 		return ResponseEntity.ok(dto);
 	}
-	
-	@GetMapping("/listar")
-    public ResponseEntity<Page<?>> listar(@PageableDefault(size = 10) Pageable paginacao) {
-		var page = dietaRepository.findAll(paginacao).map(ListarDietaDTO::new);
-		
-		return ResponseEntity.ok(page);
-    }
 
-	@GetMapping("/listar/{id}")
+	@GetMapping("/detalhar/{id}")
 	public ResponseEntity<?> detalhar(@PathVariable long id) {
-		Dieta dieta = dietaRepository.findById(id).orElseThrow(() -> new RuntimeException("Dieta não encontrado"));
+		// Busca a dieta pelo ID
+		Dieta dieta = dietaRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Dieta não encontrada"));
 
-		DetalharDietaDTO detalharDieta = new DetalharDietaDTO(dieta);
+		// Busca as refeições associadas à dieta
+		List<ListarRefeicaoDTO> refeicoes = refeicaoRepository.findByDietaId(dieta.getId()).stream()
+				.map(refeicao -> {
+					// Busca os alimentos associados à refeição
+					List<RefeicaoAlimento> refeicaoAlimentos = refeicaoAlimentoRepository.findByRefeicaoId(refeicao.getId());
+
+					// Mapeia RefeicaoAlimento para RefeicaoAlimentoDTO
+					List<RefeicaoAlimentoDTO> refeicaoAlimentosDTO = refeicaoAlimentos.stream()
+							.map(RefeicaoAlimentoDTO::new)
+							.toList();
+
+					// Retorna o ListarRefeicaoDTO com os alimentos associados
+					return new ListarRefeicaoDTO(refeicao, refeicaoAlimentosDTO);
+				})
+				.toList();
+
+		// Cria o DTO detalhado da dieta
+		DetalharDietaDTO detalharDieta = new DetalharDietaDTO(dieta, refeicoes);
+
 		return ResponseEntity.ok(detalharDieta);
 	}
+
+	@GetMapping("/listar")
+	public ResponseEntity<Page<ListarDietaDTO>> listar(@PageableDefault(size = 10) Pageable paginacao) {
+		// Busca todas as dietas paginadas
+		Page<Dieta> dietasPage = dietaRepository.findAll(paginacao);
+
+		// Para cada dieta, busca as refeições associadas e cria um ListarDietaDTO
+		Page<ListarDietaDTO> page = dietasPage.map(dieta -> {
+			// Busca as refeições associadas à dieta
+			List<ListarRefeicaoDTO> refeicoes = refeicaoRepository.findByDietaId(dieta.getId()).stream()
+					.map(refeicao -> {
+						// Busca os alimentos associados à refeição
+						List<RefeicaoAlimento> refeicaoAlimentos = refeicaoAlimentoRepository.findByRefeicaoId(refeicao.getId());
+
+						// Mapeia RefeicaoAlimento para RefeicaoAlimentoDTO
+						List<RefeicaoAlimentoDTO> refeicaoAlimentosDTO = refeicaoAlimentos.stream()
+								.map(RefeicaoAlimentoDTO::new)
+								.toList();
+
+						// Retorna o ListarRefeicaoDTO com os alimentos associados
+						return new ListarRefeicaoDTO(refeicao, refeicaoAlimentosDTO);
+					})
+					.toList();
+
+			// Retorna o ListarDietaDTO com as refeições associadas
+			return new ListarDietaDTO(dieta, refeicoes);
+		});
+
+		return ResponseEntity.ok(page);
+	}
+
+
 }

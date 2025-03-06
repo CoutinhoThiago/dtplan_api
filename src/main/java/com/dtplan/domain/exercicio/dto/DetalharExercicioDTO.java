@@ -8,13 +8,8 @@ public record DetalharExercicioDTO(
 		boolean ativo,
 		Integer tipo,
 		String observacoes,
-		String musculo_alvo,
-		Integer series,
-		Integer repeticoes_min,
-		Integer repeticoes_max,
-		double carga,
-		Integer intensidade,
-		Integer duracao_minutos) {
+		String musculo_alvo
+) {
 	public DetalharExercicioDTO(Exercicio exercicio) {
 		this(
 				exercicio.getId(), 
@@ -23,14 +18,7 @@ public record DetalharExercicioDTO(
 				exercicio.getTipo(),
 				exercicio.getObservacoes(),
 
-				exercicio.getMusculo_alvo(),
-				exercicio.getSeries(),
-				exercicio.getRepeticoes_max(),
-				exercicio.getRepeticoes_max(),
-				exercicio.getCarga(),
-
-				exercicio.getIntensidade(),
-				exercicio.getDuracao_minutos()
+				exercicio.getMusculo_alvo()
 				);
 	}
 }

@@ -1,18 +1,15 @@
 package com.dtplan.controller;
 
-import com.dtplan.domain.exercicio.dto.EditarExercicioDTO;
-import com.dtplan.domain.ficha.Ficha;
 import com.dtplan.domain.ficha.FichaRepository;
 import com.dtplan.domain.ficha.FichaService;
 import com.dtplan.domain.ficha.dto.CadastrarFichaDTO;
 import com.dtplan.domain.ficha.dto.DetalharFichaDTO;
 import com.dtplan.domain.ficha.dto.EditarFichaDTO;
 import com.dtplan.domain.ficha.dto.ListarFichaDTO;
-import jakarta.transaction.Transactional;
+import com.dtplan.domain.fichaExercicio.FichaExercicioService;
+import com.dtplan.domain.fichaExercicio.dto.CadastrarFichaExercicioDTO;
+import com.dtplan.domain.fichaExercicio.dto.DetalharFichaExercicioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +18,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 
 @RestController
-@RequestMapping("/fichas")
-public class FichaController {
+@RequestMapping("/fichaExercicio")
+public class FichaExercicioController {
 	
 	@Autowired
 	private FichaRepository treinoRepository;
@@ -30,31 +27,24 @@ public class FichaController {
 	private FichaRepository fichaRepository;
 
 	@Autowired
-	private FichaService fichaService;
+	private FichaExercicioService fichaExercicioService;
 
 	@PostMapping("/criar")
-	public ResponseEntity<DetalharFichaDTO> cadastrar(@RequestBody CadastrarFichaDTO dados, UriComponentsBuilder uriBuilder) {
-		var dto = fichaService.cadastrarFicha(dados);
+	public ResponseEntity<DetalharFichaExercicioDTO> cadastrar(@RequestBody CadastrarFichaExercicioDTO dados, UriComponentsBuilder uriBuilder) {
+		var dto = fichaExercicioService.cadastrarFichaExercicio(dados);
 
 		return ResponseEntity.ok(dto);
 	}
 
-	@PutMapping("/editar/{id}")
-	public ResponseEntity <DetalharFichaDTO> editar(@PathVariable long id, @RequestBody EditarFichaDTO dados) {
-		var dto =  fichaService.editarFicha(id, dados);
-
-		return ResponseEntity.ok(dto);
-	}
-
-	@GetMapping("/listar")
+	/*@GetMapping("/listar")
 		public ResponseEntity<List<ListarFichaDTO>> listar(@PageableDefault(size = 10) @RequestParam long treinoId) {
 		var dto = fichaService.listarFichas(treinoId);
 
 		return ResponseEntity.ok(dto);
-    }
+    }*/
 	@GetMapping("/detalhar/{id}")
-	public ResponseEntity<DetalharFichaDTO> detalhar(@PathVariable long id) {
-		var dto = fichaService.detalharFicha(id);
+	public ResponseEntity<DetalharFichaExercicioDTO> detalhar(@PathVariable long id) {
+		var dto = fichaExercicioService.detalharFichaExercicio(id);
 
 		return ResponseEntity.ok(dto);
 	}

@@ -13,13 +13,6 @@ public record CadastrarExercicioDTO(
         //@NotNull
         String observacoes,
 
-        String musculo_alvo,
-        Integer series,
-        Integer repeticoes_min,
-        Integer repeticoes_max,
-        Integer carga,
-
-        Integer duracao_minutos,
-        Integer intensidade
+        String musculo_alvo
 ) {
 }

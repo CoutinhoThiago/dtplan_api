@@ -11,5 +11,4 @@ public record CadastrarFichaDTO(
         Long treino,
         List<Long> exercicios
 ) {
-
 }

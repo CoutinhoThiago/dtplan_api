@@ -3,15 +3,20 @@ package com.dtplan.controller;
 import com.dtplan.domain.exercicio.ExercicioService;
 import com.dtplan.domain.ficha.Ficha;
 import com.dtplan.domain.ficha.FichaRepository;
+import com.dtplan.domain.ficha.dto.ListarFichaDTO;
 import com.dtplan.domain.treino.Treino;
 import com.dtplan.domain.treino.TreinoService;
 import com.dtplan.domain.treino.dto.EditarTreinoDTO;
 import com.dtplan.domain.treino.dto.DetalharTreinoDTO;
+import com.dtplan.domain.usuario.Usuario;
+import com.dtplan.domain.usuario.UsuarioRepository;
+import com.dtplan.infra.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -35,8 +40,13 @@ import java.util.List;
 	@Autowired
 	private TreinoService treinoService;
 
+	@Autowired
+	private TokenService tokenService;
+	@Autowired
+	private UsuarioRepository usuarioRepository;
+
 	@PostMapping("/criar")
-	public ResponseEntity<CadastroTreinoDTO> cadastrar(@RequestBody CadastroTreinoDTO dados, UriComponentsBuilder uriBuilder) {
+	public ResponseEntity<CadastroTreinoDTO> cadastrar(@RequestBody CadastroTreinoDTO dados, @RequestHeader("Authorization") String authorizationHeader) {
 		var dto = treinoService.cadastrarTreino(dados);
 
 		return ResponseEntity.ok(dto);
@@ -59,9 +69,17 @@ import java.util.List;
 	@GetMapping("/detalhar/{id}")
 	public ResponseEntity<?> detalhar(@PathVariable long id) {
 		Treino treino = treinoRepository.findById(id).orElseThrow(() -> new RuntimeException("Treino não encontrado"));
-		List<Ficha> fichas = fichaRepository.findByTreinoId(treino.getId());
+		List<ListarFichaDTO> fichas = fichaRepository.findByTreinoId(treino.getId());
 
 		DetalharTreinoDTO detalhesTreino = new DetalharTreinoDTO(treino, fichas);
 		return ResponseEntity.ok(detalhesTreino);
+	}
+
+	@DeleteMapping("/excluir/{id}")
+	@Transactional
+	public ResponseEntity<Void> excluir(@PathVariable long id) {
+		treinoService.excluirTreino(id);
+
+		return ResponseEntity.noContent().build();
 	}
 }
