@@ -102,7 +102,10 @@ public class DataInitializer implements CommandLineRunner {
                     "12345678",
                     Permissao.ADMIN,
                     "admin",
-                    "08866966584"
+                    "08866966584",
+                    "ambos",
+                    "12345",
+                    "12345"
             );
 
             usuarioService.cadastrarUsuario(dados);

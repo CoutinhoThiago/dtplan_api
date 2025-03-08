@@ -12,7 +12,10 @@ public record DetalharUsuarioDTO(
         double altura,
         double pesoAtual,
         Enum nivelAtividade,
-        Enum objetivo
+        Enum objetivo,
+        String tipoUsuario,
+        String cref,
+        String crn
 ) {
     public DetalharUsuarioDTO(Usuario usuario) {
         this(
@@ -23,7 +26,10 @@ public record DetalharUsuarioDTO(
                 usuario.getAltura(),
                 usuario.getPesoAtual(),
                 usuario.getNivelAtividade(),
-                usuario.getObjetivo()
+                usuario.getObjetivo(),
+                usuario.getTipoUsuario(),
+                usuario.getCref(),
+                usuario.getCrn()
         );
     }
 }

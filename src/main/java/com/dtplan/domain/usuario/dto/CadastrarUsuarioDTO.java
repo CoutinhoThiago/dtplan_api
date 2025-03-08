@@ -8,7 +8,10 @@ public record CadastrarUsuarioDTO(
         String senha,
         Permissao permissao,
         String nome,
-        String cpf
+        String cpf,
+        String tipoUsuario,
+        String cref,
+        String crn
 
 //        "dataNascimento": null,
 //	      "altura": 0.0,

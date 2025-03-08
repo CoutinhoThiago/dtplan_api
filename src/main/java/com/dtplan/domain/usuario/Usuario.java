@@ -36,6 +36,11 @@ public class Usuario implements UserDetails {
     private String nome;
     private String cpf;
 
+    private String tipoUsuario;
+    private String cref;
+    private String crn;
+
+
     @Column(name = "data_nascimento")
     private Date dataNascimento; // meses
 
@@ -54,7 +59,7 @@ public class Usuario implements UserDetails {
     @OneToMany(mappedBy = "usuario")
     private List<Treino> treinos;
 
-    public Usuario(String email, String senha, Permissao permissao, String nome, String cpf) {
+    public Usuario(String email, String senha, Permissao permissao, String nome, String cpf, String tipoUsuario, String cref, String crn) {
         this.nome = nome;
         this.cpf = cpf;
 
@@ -63,6 +68,10 @@ public class Usuario implements UserDetails {
         this.senha = senha;
 
         this.permissao = permissao;
+
+        this.tipoUsuario = tipoUsuario;
+        this.cref = cref;
+        this.crn = crn;
     }
 
     @Override

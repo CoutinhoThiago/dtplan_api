@@ -31,7 +31,10 @@ public class UsuarioService {
                     senhaEncriptada,
                     permissao,
                     dados.nome(),
-                    dados.cpf()
+                    dados.cpf(),
+                    dados.tipoUsuario(),
+                    dados.cref(),
+                    dados.crn()
             );
             usuarioRepository.save(usuario);
 

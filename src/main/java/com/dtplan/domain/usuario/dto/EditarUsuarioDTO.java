@@ -12,5 +12,8 @@ public record EditarUsuarioDTO(
         Optional<Integer> altura,
         Optional<Integer> pesoAtual,
         Optional<String> nivelAtividade,
-        Optional<String> objetivo
+        Optional<String> objetivo,
+        Optional<String> tipoUsuario,
+        Optional<String> cref,
+        Optional<String> crn
 ) {}
