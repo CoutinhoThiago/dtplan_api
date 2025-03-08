@@ -13,6 +13,7 @@ import com.dtplan.domain.refeicao.dto.ListarRefeicaoDTO;
 import com.dtplan.domain.refeicaoAlimento.RefeicaoAlimento;
 import com.dtplan.domain.refeicaoAlimento.RefeicaoAlimentoRepository;
 import com.dtplan.domain.refeicaoAlimento.dto.RefeicaoAlimentoDTO;
+import com.dtplan.domain.treino.dto.ListarTreinoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -83,34 +84,13 @@ public class DietaController {
 	}
 
 	@GetMapping("/listar")
-	public ResponseEntity<Page<ListarDietaDTO>> listar(@PageableDefault(size = 10) Pageable paginacao) {
-		// Busca todas as dietas paginadas
-		Page<Dieta> dietasPage = dietaRepository.findAll(paginacao);
-
-		// Para cada dieta, busca as refeições associadas e cria um ListarDietaDTO
-		Page<ListarDietaDTO> page = dietasPage.map(dieta -> {
-			// Busca as refeições associadas à dieta
-			List<ListarRefeicaoDTO> refeicoes = refeicaoRepository.findByDietaId(dieta.getId()).stream()
-					.map(refeicao -> {
-						// Busca os alimentos associados à refeição
-						List<RefeicaoAlimento> refeicaoAlimentos = refeicaoAlimentoRepository.findByRefeicaoId(refeicao.getId());
-
-						// Mapeia RefeicaoAlimento para RefeicaoAlimentoDTO
-						List<RefeicaoAlimentoDTO> refeicaoAlimentosDTO = refeicaoAlimentos.stream()
-								.map(RefeicaoAlimentoDTO::new)
-								.toList();
-
-						// Retorna o ListarRefeicaoDTO com os alimentos associados
-						return new ListarRefeicaoDTO(refeicao, refeicaoAlimentosDTO);
-					})
-					.toList();
-
-			// Retorna o ListarDietaDTO com as refeições associadas
-			return new ListarDietaDTO(dieta, refeicoes);
-		});
+	public ResponseEntity<Page<ListarDietaDTO>> listar(
+			//@RequestParam Long usuarioId, // Parâmetro para filtrar por ID do usuário
+			@RequestHeader("Authorization") String authorizationHeader,
+			@PageableDefault(size = 10) Pageable paginacao
+	) {
+		var page = dietaService.listarDietas(authorizationHeader, paginacao);
 
 		return ResponseEntity.ok(page);
 	}
-
-
 }

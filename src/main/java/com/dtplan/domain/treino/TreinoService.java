@@ -6,13 +6,18 @@ import com.dtplan.domain.fichaExercicio.FichaExercicioRepository;
 import com.dtplan.domain.treino.dto.CadastroTreinoDTO;
 import com.dtplan.domain.treino.dto.EditarTreinoDTO;
 import com.dtplan.domain.treino.dto.DetalharTreinoDTO;
+import com.dtplan.domain.treino.dto.ListarTreinoDTO;
 import com.dtplan.domain.usuario.Usuario;
 import com.dtplan.domain.usuario.UsuarioRepository;
+import com.dtplan.domain.usuario.dto.DetalharUsuarioDTO;
 import com.dtplan.infra.security.TokenService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -68,5 +73,31 @@ public class TreinoService {
         fichaRepository.deleteAll(treino.getFichas());
 
         treinoRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Page<ListarTreinoDTO> listarTreinos(String authorizationHeader, Pageable paginacao) {
+        // Extrai o token e obtém o email do usuário
+        String token = authorizationHeader.substring(7); // Remove "Bearer "
+        String login = tokenService.getSubject(token);
+
+        // Busca o usuário pelo email
+        Usuario usuario = usuarioRepository.findByEmail(login);
+        if (usuario == null) {
+            throw new RuntimeException("Usuário não encontrado.");
+        }
+
+        // Busca os treinos do usuário
+        Page<Treino> treinos = treinoRepository.findByUsuarioId(usuario.getId(), paginacao);
+
+        // Mapeia os treinos para DTOs
+        return treinos.map(treino -> new ListarTreinoDTO(
+                treino.getId(),
+                treino.getNome(),
+                treino.getDescricao(),
+                treino.getAutor(),
+                treino.getUsuario().getNome()
+                //new DetalharUsuarioDTO(treino.getUsuario())
+        ));
     }
 }

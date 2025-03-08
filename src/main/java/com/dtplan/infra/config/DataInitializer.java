@@ -27,10 +27,7 @@ import com.dtplan.domain.refeicaoAlimento.RefeicaoAlimentoRepository;
 import com.dtplan.domain.treino.TreinoRepository;
 import com.dtplan.domain.treino.TreinoService;
 import com.dtplan.domain.treino.dto.CadastroTreinoDTO;
-import com.dtplan.domain.usuario.Permissao;
-import com.dtplan.domain.usuario.Usuario;
-import com.dtplan.domain.usuario.UsuarioRepository;
-import com.dtplan.domain.usuario.UsuarioService;
+import com.dtplan.domain.usuario.*;
 import com.dtplan.domain.usuario.dto.CadastrarUsuarioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -97,19 +94,76 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         // Verifica se já existe algum usuário no banco de dados
         if (usuarioRepository.count() == 0) {
-            CadastrarUsuarioDTO dados = new CadastrarUsuarioDTO(
+            CadastrarUsuarioDTO admin = new CadastrarUsuarioDTO(
                     "tcoutinhossilva@gmail.com",
                     "12345678",
                     Permissao.ADMIN,
+                    Genero.MASCULINO,
                     "admin",
                     "08866966584",
+                    "01-01-2000",
+                    172,
+                    75,
                     "ambos",
                     "12345",
                     "12345"
             );
 
-            usuarioService.cadastrarUsuario(dados);
+            usuarioService.cadastrarUsuario(admin);
             System.out.println("Usuário admin criado com sucesso!");
+
+            CadastrarUsuarioDTO aluno = new CadastrarUsuarioDTO(
+                    "aluno@gmail.com",
+                    "12345678",
+                    Permissao.ADMIN,
+                    Genero.OUTRO,
+                    "aluno",
+                    "00000000001",
+                    "01-01-2000",
+                    190,
+                    80,
+                    "normal",
+                    "",
+                    ""
+            );
+
+            usuarioService.cadastrarUsuario(aluno);
+            System.out.println("Usuário aluno criado com sucesso!");
+
+            CadastrarUsuarioDTO paciente = new CadastrarUsuarioDTO(
+                    "paciente@gmail.com",
+                    "12345678",
+                    Permissao.ADMIN,
+                    Genero.FEMININO,
+                    "paciente",
+                    "00000000001",
+                    "01-01-2000",
+                    160,
+                    55,
+                    "normal",
+                    "",
+                    ""
+            );
+
+            usuarioService.cadastrarUsuario(paciente);
+            System.out.println("Usuário paciente criado com sucesso!");
+
+            Usuario adminUsuario = (Usuario) usuarioRepository.findByEmail(admin.email());
+            Usuario alunoUsuario = (Usuario) usuarioRepository.findByEmail(aluno.email());
+            Usuario pacienteUsuario = (Usuario) usuarioRepository.findByEmail(paciente.email());
+
+            List<Long> alunosIds = List.of(2L);
+            List<Usuario> listaDeAlunos = usuarioRepository.findAlunosById(alunosIds);
+            System.out.println(listaDeAlunos);
+            adminUsuario.setAlunos(listaDeAlunos);
+
+            List<Long> pacientesIds = List.of(3L);
+            List<Usuario> listaDePacientes = usuarioRepository.findPacientesById(pacientesIds);
+            System.out.println(listaDePacientes);
+            adminUsuario.setPacientes(listaDePacientes);
+
+            // Salvar as alterações no banco de dados
+            usuarioRepository.save(adminUsuario);
         }
 
         // Cadastrando exercícios se não houver nenhum no banco

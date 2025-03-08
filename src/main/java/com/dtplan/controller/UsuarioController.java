@@ -41,10 +41,13 @@ public class UsuarioController {
     }
 
     @GetMapping("/detalhar")
-    //@SecurityRequirement(name = "bearer-key")
-    public ResponseEntity<ResponseEntity> detalharUsuario(@RequestHeader("Authorization") String authorizationHeader) {
-        var dto = usuarioService.detalharUsuario(authorizationHeader);
-
+    public ResponseEntity<?> detalharUsuario(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestParam(defaultValue = "true") boolean completo,
+            @RequestParam(defaultValue = "true") boolean alunosCompletos,
+            @RequestParam(defaultValue = "true") boolean pacientesCompletos
+    ) {
+        var dto = usuarioService.detalharUsuario(authorizationHeader, completo, alunosCompletos, pacientesCompletos);
         return ResponseEntity.ok(dto);
     }
 }

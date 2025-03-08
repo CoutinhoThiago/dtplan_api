@@ -58,11 +58,15 @@ import java.util.List;
 
 		return ResponseEntity.ok(dto);
 	}
-	
+
 	@GetMapping("/listar")
-    public ResponseEntity<Page<ListarTreinoDTO>> listar(@PageableDefault(size = 10) Pageable paginacao) {
-		var page = treinoRepository.findAll(paginacao).map(ListarTreinoDTO::new);
-		
+    public ResponseEntity<Page<ListarTreinoDTO>> listar(
+			//@RequestParam Long usuarioId, // Parâmetro para filtrar por ID do usuário
+			@RequestHeader("Authorization") String authorizationHeader,
+			@PageableDefault(size = 10) Pageable paginacao
+	) {
+		var page = treinoService.listarTreinos(authorizationHeader, paginacao);
+
 		return ResponseEntity.ok(page);
     }
 

@@ -10,10 +10,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.sql.ClientInfoStatus;
+import java.util.*;
 
 @Table(name = "usuarios")
 @Entity(name = "Usuario")
@@ -37,12 +35,32 @@ public class Usuario implements UserDetails {
     private String cpf;
 
     private String tipoUsuario;
+
+    // Treinador
     private String cref;
+
+    @ManyToMany
+    @JoinTable(
+            name = "treinador_alunos", // Nome da tabela de junção
+            joinColumns = @JoinColumn(name = "treinador_id"), // Coluna do treinador
+            inverseJoinColumns = @JoinColumn(name = "aluno_id") // Coluna do aluno
+    )
+    private List<Usuario> alunos;
+
+    // Nutricionista
     private String crn;
 
+    @ManyToMany
+    @JoinTable(
+            name = "nutricionista_pacientes", // Nome da tabela de junção
+            joinColumns = @JoinColumn(name = "nutricionista_id"), // Coluna do nutricionista
+            inverseJoinColumns = @JoinColumn(name = "paciente_id") // Coluna do paciente
+    )
+    private List<Usuario> pacientes;
 
     @Column(name = "data_nascimento")
-    private Date dataNascimento; // meses
+    //private Date dataNascimento; // meses
+    private String dataNascimento; // meses
 
     private int altura; // cm
 
@@ -54,37 +72,57 @@ public class Usuario implements UserDetails {
     private NivelAtividade nivelAtividade;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "objetivo")
     private Objetivo objetivo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "genero")
+    private Genero genero;
 
     @OneToMany(mappedBy = "usuario")
     private List<Treino> treinos;
 
-    public Usuario(String email, String senha, Permissao permissao, String nome, String cpf, String tipoUsuario, String cref, String crn) {
+    public Usuario(
+            String email,
+            String senha,
+            Permissao permissao,
+            Genero genero,
+            String nome, String cpf,
+            String dataNascimento,
+            int altura,
+            int pesoAtual,
+            String tipoUsuario,
+            String cref,
+            String crn
+    ) {
         this.nome = nome;
         this.cpf = cpf;
-
-
         this.email = email;
         this.senha = senha;
-
         this.permissao = permissao;
-
+        this.genero = genero;
         this.tipoUsuario = tipoUsuario;
-        this.cref = cref;
-        this.crn = crn;
+        this.altura = altura;
+        this.pesoAtual = pesoAtual;
+        this.dataNascimento = dataNascimento;
+
+        this.cref = (cref == null || cref.isEmpty()) ? null : cref;
+        this.crn = (crn == null || crn.isEmpty()) ? null : crn;
+
+        this.alunos = new ArrayList<>();
+        this.pacientes = new ArrayList<>();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(this.permissao == Permissao.ADMIN) {
+        if (this.permissao == Permissao.ADMIN) {
             return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
-        }
-        else {
+        } else {
             return List.of(new SimpleGrantedAuthority("ROLE_USER"));
         }
     }
 
-    public void atualizarDados(Optional<String> nome, Optional<String> cpf, Optional<Date> dataNascimento, Optional<Integer> altura, Optional<Integer> pesoAtual, Optional<String> nivelAtividade, Optional<String> objetivo) {
+    public void atualizarDados(Optional<String> nome, Optional<String> cpf, Optional<String> dataNascimento, Optional<Integer> altura, Optional<Integer> pesoAtual, Optional<String> nivelAtividade, Optional<String> objetivo) {
         nome.ifPresent(n -> this.nome = n);
         cpf.ifPresent(c -> this.cpf = c);
         dataNascimento.ifPresent(d -> this.dataNascimento = d);
@@ -94,10 +132,18 @@ public class Usuario implements UserDetails {
         objetivo.ifPresent(o -> this.objetivo = Objetivo.valueOf(o));
     }
 
+    public void setAlunos(List<Usuario> listaDeAlunos) {
+        this.alunos = listaDeAlunos;
+    }
+    public void setPacientes(List<Usuario> listaDePacientes) {
+        this.pacientes = listaDePacientes;
+    }
+
     @Override
     public String getPassword() {
         return senha;
     }
+
     @Override
     public String getUsername() {
         return email;
@@ -107,14 +153,17 @@ public class Usuario implements UserDetails {
     public boolean isAccountNonExpired() {
         return true;
     }
+
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
+
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
+
     @Override
     public boolean isEnabled() {
         return true;
