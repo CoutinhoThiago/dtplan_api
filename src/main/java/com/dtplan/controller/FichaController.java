@@ -58,4 +58,11 @@ public class FichaController {
 
 		return ResponseEntity.ok(dto);
 	}
+
+	@DeleteMapping("/excluir/{id}")
+	public ResponseEntity<Void> excluir(@PathVariable long id) {
+		fichaService.excluirFicha(id);
+
+		return ResponseEntity.noContent().build();
+	}
 }

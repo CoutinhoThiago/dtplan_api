@@ -10,6 +10,7 @@ import com.dtplan.domain.treino.dto.ListarTreinoDTO;
 import com.dtplan.domain.usuario.Usuario;
 import com.dtplan.domain.usuario.UsuarioRepository;
 import com.dtplan.domain.usuario.dto.DetalharUsuarioDTO;
+import com.dtplan.domain.usuario.dto.UsuarioDTO;
 import com.dtplan.infra.security.TokenService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,18 +42,53 @@ public class TreinoService {
 
     @Transactional
     public CadastroTreinoDTO cadastrarTreino(CadastroTreinoDTO dados) {
+        Usuario usuario = identificarUsuario(dados.usuario());
 
-        Usuario usuario = usuarioRepository.findByEmail(dados.usuario());
+        if (usuario == null) {
+            throw new RuntimeException("Usuário não encontrado com os dados fornecidos.");
+        }
+
+        // Cria o treino
         Treino treino = new Treino(dados.nome(), dados.descricao(), dados.autor(), usuario);
-
         treinoRepository.save(treino);
 
-        return new CadastroTreinoDTO(treino.getNome(), treino.getDescricao(), treino.getAutor(), treino.getUsuario().getNome());
+        return new CadastroTreinoDTO(
+                treino.getNome(),
+                treino.getDescricao(),
+                treino.getAutor(),
+                new UsuarioDTO(
+                        usuario.getId(),
+                        usuario.getNome(),
+                        usuario.getEmail(),
+                        usuario.getCpf()
+                )
+        );
     }
+
+    private Usuario identificarUsuario(UsuarioDTO usuarioDTO) {
+        if (usuarioDTO.id() != null) {
+            return usuarioRepository.findById(usuarioDTO.id())
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o ID fornecido."));
+        } else if (usuarioDTO.nome() != null) {
+            return Optional.ofNullable(usuarioRepository.findByNome(usuarioDTO.nome()))
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o nome fornecido."));
+        } else if (usuarioDTO.login() != null) {
+            return Optional.ofNullable(usuarioRepository.findByEmail(usuarioDTO.login()))
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o login fornecido."));
+        } else if (usuarioDTO.documento() != null) {
+            return Optional.ofNullable(usuarioRepository.findByCpf(usuarioDTO.documento()))
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o documento fornecido."));
+        }
+        throw new RuntimeException("Nenhum dado de usuário foi fornecido.");
+    }
+
+
     @Transactional
     public DetalharTreinoDTO editarTreno(long id, EditarTreinoDTO dados) {
         Optional<Treino> treinoOpt = treinoRepository.findById(id);
         Treino treino = treinoOpt.get();
+
+        Usuario usuario = identificarUsuario(dados.usuario());
 
         treino.atualizarInformacoes(dados);
 

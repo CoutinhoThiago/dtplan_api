@@ -36,6 +36,19 @@ public class FichaExercicioController {
 		return ResponseEntity.ok(dto);
 	}
 
+	@PutMapping("/editar/{id}")
+	public ResponseEntity<DetalharFichaExercicioDTO> editarFichaExercicio(@PathVariable long id, @RequestBody CadastrarFichaExercicioDTO dados) {
+		var dto = fichaExercicioService.editarFichaExercicio(id, dados);
+		return ResponseEntity.ok(dto);
+	}
+
+	@DeleteMapping("/excluir/{id}")
+	public ResponseEntity<?> excluir(@PathVariable long id) {
+		fichaExercicioService.excluirFichaExercicio(id);
+
+		return ResponseEntity.noContent().build();
+	}
+
 	/*@GetMapping("/listar")
 		public ResponseEntity<List<ListarFichaDTO>> listar(@PageableDefault(size = 10) @RequestParam long treinoId) {
 		var dto = fichaService.listarFichas(treinoId);

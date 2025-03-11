@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface FichaExercicioRepository extends JpaRepository<FichaExercicio, Long> {
     void deleteByFichaId(Long id);
+    void deleteById(Long id);
     //List<FichaExercicioDTO> findByFichaId(Long id);
 
 }

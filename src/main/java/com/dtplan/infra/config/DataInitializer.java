@@ -29,6 +29,7 @@ import com.dtplan.domain.treino.TreinoService;
 import com.dtplan.domain.treino.dto.CadastroTreinoDTO;
 import com.dtplan.domain.usuario.*;
 import com.dtplan.domain.usuario.dto.CadastrarUsuarioDTO;
+import com.dtplan.domain.usuario.dto.UsuarioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -152,7 +153,7 @@ public class DataInitializer implements CommandLineRunner {
             Usuario alunoUsuario = (Usuario) usuarioRepository.findByEmail(aluno.email());
             Usuario pacienteUsuario = (Usuario) usuarioRepository.findByEmail(paciente.email());
 
-            List<Long> alunosIds = List.of(2L);
+            List<Long> alunosIds = List.of(2L, 3L);
             List<Usuario> listaDeAlunos = usuarioRepository.findAlunosById(alunosIds);
             System.out.println(listaDeAlunos);
             adminUsuario.setAlunos(listaDeAlunos);
@@ -227,10 +228,30 @@ public class DataInitializer implements CommandLineRunner {
         // Cadastrando treinos se não houver nenhum no banco
         if (treinoRepository.count() == 0) {
             List<CadastroTreinoDTO> treinos = List.of(
-                    new CadastroTreinoDTO("Treino ABC", "", "tcoutinhossilva@gmail.com", "tcoutinhossilva@gmail.com"),
-                    new CadastroTreinoDTO("Rotina de Cárdio", "", "tcoutinhossilva@gmail.com", "tcoutinhossilva@gmail.com"),
-                    new CadastroTreinoDTO("Rotina de Abdominal", "", "tcoutinhossilva@gmail.com", "tcoutinhossilva@gmail.com"),
-                    new CadastroTreinoDTO("Treino sem ficha (teste)", "", "tcoutinhossilva@gmail.com", "tcoutinhossilva@gmail.com")
+                    new CadastroTreinoDTO(
+                            "Treino ABC",
+                            "",
+                            "tcoutinhossilva@gmail.com",
+                            new UsuarioDTO(null, null, "tcoutinhossilva@gmail.com", null) // UsuarioDTO com login
+                    ),
+                    new CadastroTreinoDTO(
+                            "Rotina de Cárdio",
+                            "",
+                            "tcoutinhossilva@gmail.com",
+                            new UsuarioDTO(null, null, "tcoutinhossilva@gmail.com", null) // UsuarioDTO com login
+                    ),
+                    new CadastroTreinoDTO(
+                            "Rotina de Abdominal",
+                            "",
+                            "tcoutinhossilva@gmail.com",
+                            new UsuarioDTO(null, null, "tcoutinhossilva@gmail.com", null) // UsuarioDTO com login
+                    ),
+                    new CadastroTreinoDTO(
+                            "Treino sem ficha (teste)",
+                            "",
+                            "tcoutinhossilva@gmail.com",
+                            new UsuarioDTO(null, null, "tcoutinhossilva@gmail.com", null) // UsuarioDTO com login
+                    )
             );
 
             // Cadastra cada treino no banco de dados

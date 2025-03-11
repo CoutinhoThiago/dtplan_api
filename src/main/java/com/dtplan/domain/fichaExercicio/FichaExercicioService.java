@@ -95,4 +95,16 @@ public class FichaExercicioService {
 
         return new DetalharFichaExercicioDTO(ficha);
     }
+
+    @Transactional //Adicionar logica para editar
+    public DetalharFichaExercicioDTO editarFichaExercicio(long id, CadastrarFichaExercicioDTO dados) {
+        FichaExercicio ficha = fichaExercicioRepository.findById(id).orElseThrow(() -> new RuntimeException("FichaExercicio não encontrado"));
+
+        return new DetalharFichaExercicioDTO(ficha);
+    }
+
+    @Transactional
+    public void excluirFichaExercicio(long id) {
+        fichaExercicioRepository.deleteById(id);
+    }
 }

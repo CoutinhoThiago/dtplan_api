@@ -37,10 +37,12 @@ public class FichaService {
     @Transactional
     public DetalharFichaDTO cadastrarFicha(CadastrarFichaDTO dados) {
         List<FichaExercicio> exercicios = new ArrayList<>();
-        for (Long id : dados.exercicios()) {
-            Optional<FichaExercicio> exercicioOpt = fichaExercicioRepository.findById(id);
-            // Se o exercício existir, adiciona à lista
-            exercicioOpt.ifPresent(exercicios::add);
+        if (dados.exercicios() != null && !dados.exercicios().isEmpty()) {
+            for (Long id : dados.exercicios()) {
+                Optional<FichaExercicio> exercicioOpt = fichaExercicioRepository.findById(id);
+                // Se o exercício existir, adiciona à lista
+                exercicioOpt.ifPresent(exercicios::add);
+            }
         }
 
         Optional<Treino> treinoOpt = treinoRepository.findById(dados.treino());
@@ -86,5 +88,11 @@ public class FichaService {
         Ficha ficha = fichaRepository.findById(id).orElseThrow(() -> new RuntimeException("Ficha não encontrado"));
 
         return new DetalharFichaDTO(ficha);
+    }
+
+    @Transactional
+    public void excluirFicha(Long id) {
+        fichaExercicioRepository.deleteByFichaId(id);
+        fichaRepository.deleteById(id);
     }
 }
