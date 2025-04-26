@@ -11,5 +11,5 @@ public interface FichaExercicioRepository extends JpaRepository<FichaExercicio, 
     void deleteByFichaId(Long id);
     void deleteById(Long id);
     //List<FichaExercicioDTO> findByFichaId(Long id);
-
+    int countByFichaId(Long fichaId);
 }

@@ -67,6 +67,8 @@ import java.util.List;
 	) {
 		var page = treinoService.listarTreinos(authorizationHeader, paginacao);
 
+		System.out.println(page);
+
 		return ResponseEntity.ok(page);
     }
 

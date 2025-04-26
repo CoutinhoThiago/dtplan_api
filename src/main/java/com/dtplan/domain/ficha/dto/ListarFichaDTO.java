@@ -10,7 +10,7 @@ public record ListarFichaDTO(
         Long id,
         Long treinoId,
         String nome,
-        List<FichaExercicioDTO> exercicios
+        List<FichaExercicioDTO> fichaExercicios
 ) {
     public ListarFichaDTO(Ficha ficha) {
         this(

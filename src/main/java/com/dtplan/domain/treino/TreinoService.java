@@ -42,20 +42,29 @@ public class TreinoService {
 
     @Transactional
     public CadastroTreinoDTO cadastrarTreino(CadastroTreinoDTO dados) {
-        Usuario usuario = identificarUsuario(dados.usuario());
+        Usuario autor = identificarUsuario(dados.autor());
+        if (autor == null) {
+            throw new RuntimeException("Autor não encontrado com os dados fornecidos.");
+        }
 
+        Usuario usuario = identificarUsuario(dados.usuario());
         if (usuario == null) {
             throw new RuntimeException("Usuário não encontrado com os dados fornecidos.");
         }
 
         // Cria o treino
-        Treino treino = new Treino(dados.nome(), dados.descricao(), dados.autor(), usuario);
+        Treino treino = new Treino(dados.nome(), dados.descricao(), autor, usuario);
         treinoRepository.save(treino);
 
         return new CadastroTreinoDTO(
                 treino.getNome(),
                 treino.getDescricao(),
-                treino.getAutor(),
+                new UsuarioDTO(
+                        autor.getId(),
+                        autor.getNome(),
+                        autor.getEmail(),
+                        autor.getCpf()
+                ),
                 new UsuarioDTO(
                         usuario.getId(),
                         usuario.getNome(),
@@ -88,13 +97,20 @@ public class TreinoService {
         Optional<Treino> treinoOpt = treinoRepository.findById(id);
         Treino treino = treinoOpt.get();
 
+        Usuario autor = identificarUsuario(dados.autor());
         Usuario usuario = identificarUsuario(dados.usuario());
 
         treino.atualizarInformacoes(dados);
 
         treinoRepository.save(treino);
 
-        return new DetalharTreinoDTO(treino.getId(), treino.getNome(), treino.getDescricao(), treino.getAutor(), /*treino.getUsuario(),*/ null);
+        return new DetalharTreinoDTO(
+                treino.getId(),
+                treino.getNome(),
+                treino.getDescricao(),
+                new DetalharUsuarioDTO(autor, false, false),
+                new DetalharUsuarioDTO(usuario, false, false),
+                null);
     }
 
     @Transactional
@@ -127,13 +143,18 @@ public class TreinoService {
         Page<Treino> treinos = treinoRepository.findByUsuarioId(usuario.getId(), paginacao);
 
         // Mapeia os treinos para DTOs
-        return treinos.map(treino -> new ListarTreinoDTO(
-                treino.getId(),
-                treino.getNome(),
-                treino.getDescricao(),
-                treino.getAutor(),
-                treino.getUsuario().getNome()
-                //new DetalharUsuarioDTO(treino.getUsuario())
-        ));
+        return treinos.map(treino -> {
+            // Obtém o autor do treino
+            Usuario autor = usuarioRepository.findByEmail(treino.getAutor().getEmail());
+
+            // Constrói o DTO
+            return new ListarTreinoDTO(
+                    treino.getId(),
+                    treino.getNome(),
+                    treino.getDescricao(),
+                    new DetalharUsuarioDTO(autor, false, false), // Autor do treino
+                    new DetalharUsuarioDTO(usuario, false, false) // Usuário associado ao treino
+            );
+        });
     }
 }

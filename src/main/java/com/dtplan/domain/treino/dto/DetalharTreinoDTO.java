@@ -5,6 +5,7 @@ import com.dtplan.domain.ficha.dto.ListarFichaDTO;
 import com.dtplan.domain.treino.Tipo;
 import com.dtplan.domain.treino.Treino;
 import com.dtplan.domain.usuario.Usuario;
+import com.dtplan.domain.usuario.dto.DetalharUsuarioDTO;
 
 import java.util.List;
 
@@ -12,10 +13,10 @@ public record DetalharTreinoDTO(
 		long id,
 		String nome,
 		String descricao,
-		String autor,
 		//Tipo tipo,
 
-		//Usuario usuario,
+		DetalharUsuarioDTO autor,
+		DetalharUsuarioDTO usuario,
 
 		List<ListarFichaDTO> fichas
 ) {
@@ -25,7 +26,9 @@ public record DetalharTreinoDTO(
 				treino.getId(),
 				treino.getNome(),
 				treino.getDescricao(),
-				treino.getAutor(),
+
+				new DetalharUsuarioDTO(treino.getAutor(), false, false),
+				new DetalharUsuarioDTO(treino.getUsuario(), false, false),
 				//treino.getTipo(),
 
 				//treino.getUsuario(),

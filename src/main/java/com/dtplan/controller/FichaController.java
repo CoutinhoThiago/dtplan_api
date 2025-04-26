@@ -4,10 +4,7 @@ import com.dtplan.domain.exercicio.dto.EditarExercicioDTO;
 import com.dtplan.domain.ficha.Ficha;
 import com.dtplan.domain.ficha.FichaRepository;
 import com.dtplan.domain.ficha.FichaService;
-import com.dtplan.domain.ficha.dto.CadastrarFichaDTO;
-import com.dtplan.domain.ficha.dto.DetalharFichaDTO;
-import com.dtplan.domain.ficha.dto.EditarFichaDTO;
-import com.dtplan.domain.ficha.dto.ListarFichaDTO;
+import com.dtplan.domain.ficha.dto.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -44,6 +41,11 @@ public class FichaController {
 		var dto =  fichaService.editarFicha(id, dados);
 
 		return ResponseEntity.ok(dto);
+	}
+	@PutMapping("/reordenar-exercicios")
+	public ResponseEntity<Void> reordenarExercicios(@RequestBody ReordenarExerciciosDTO dados) {
+		fichaService.reordenarExercicios(dados.fichaId(), dados.novaOrdemIds());
+		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("/listar")

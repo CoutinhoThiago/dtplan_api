@@ -9,6 +9,8 @@ import com.dtplan.domain.ficha.dto.EditarFichaDTO;
 import com.dtplan.domain.ficha.dto.ListarFichaDTO;
 import com.dtplan.domain.fichaExercicio.dto.CadastrarFichaExercicioDTO;
 import com.dtplan.domain.fichaExercicio.dto.DetalharFichaExercicioDTO;
+import com.dtplan.domain.fichaExercicio.dto.EditarFichaExercicioDTO;
+import com.dtplan.domain.fichaExercicio.dto.FichaExercicioDTO;
 import com.dtplan.domain.treino.TreinoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,89 +24,93 @@ import java.util.Optional;
 public class FichaExercicioService {
 
     @Autowired
-    ExercicioRepository exercicioRepository;
+    private ExercicioRepository exercicioRepository;
 
     @Autowired
-    FichaRepository fichaRepository;
+    private FichaRepository fichaRepository;
 
     @Autowired
-    FichaExercicioRepository fichaExercicioRepository;
+    private FichaExercicioRepository fichaExercicioRepository;
 
     @Autowired
-    TreinoRepository treinoRepository;
+    private TreinoRepository treinoRepository;
 
     @Transactional
     public DetalharFichaExercicioDTO cadastrarFichaExercicio(CadastrarFichaExercicioDTO dados) {
-        List<FichaExercicio> exercicios = new ArrayList<>();
-
+        // Busca o exercício e a ficha no repositório
         Optional<Exercicio> exercicioOpt = exercicioRepository.findById(dados.exercicioId());
+        if (exercicioOpt.isEmpty()) {
+            throw new RuntimeException("Exercício não encontrado");
+        }
         Exercicio exercicio = exercicioOpt.get();
+
         Optional<Ficha> fichaOpt = fichaRepository.findById(dados.fichaId());
+        if (fichaOpt.isEmpty()) {
+            throw new RuntimeException("Ficha não encontrada");
+        }
         Ficha ficha = fichaOpt.get();
 
+        // Calcula a ordem automaticamente
+        int ordem = fichaExercicioRepository.countByFichaId(dados.fichaId()) + 1;
+
+        // Cria o FichaExercicio com a ordem calculada
         FichaExercicio fichaExercicio = new FichaExercicio(
                 ficha,
                 exercicio,
-
                 dados.repeticoes(),
                 dados.series(),
                 dados.carga(),
-                //Integer repeticoes_min,
-                //Integer repeticoes_max,
-
                 dados.duracao_minutos(),
-                dados.intensidade()
-                );
+                dados.intensidade(),
+                ordem // Ordem automática
+        );
+
+        // Salva o FichaExercicio no repositório
         fichaExercicioRepository.save(fichaExercicio);
 
         // Retorna o DTO detalhando a ficha criada
         return new DetalharFichaExercicioDTO(fichaExercicio);
     }
 
-    @Transactional
-    public DetalharFichaDTO editarFicha(long id, EditarFichaDTO dados) {
-        Optional<Ficha> fichaOpt = fichaRepository.findById(id);
-        if (fichaOpt.isEmpty()) {
-            throw new RuntimeException("Ficha não encontrada");
-        }
 
-        Ficha ficha = fichaOpt.get();
 
-        // Atualiza a lista de exercícios
-        List<Exercicio> exercicios = new ArrayList<>();
-        for (Long exercicioId : dados.exercicios()) {
-            Optional<Exercicio> exercicioOpt = exercicioRepository.findById(exercicioId);
-            exercicioOpt.ifPresent(exercicios::add);
-        }
-
-        ficha.atualizarInformacoes(dados.nome(), exercicios);
-
-        // Salva a ficha atualizada
-        fichaRepository.save(ficha);
-
-        // Retorna o DTO detalhando a ficha editada
-        return new DetalharFichaDTO(ficha);
-    }
-
-    public List<ListarFichaDTO> listarFichas(Long trinoId) {
-        return fichaRepository.findByTreinoId(trinoId);
+    public List<ListarFichaDTO> listarFichas(Long treinoId) {
+        // Retorna a lista de fichas associadas ao treino
+        return fichaRepository.findByTreinoId(treinoId);
     }
 
     public DetalharFichaExercicioDTO detalharFichaExercicio(long id) {
-        FichaExercicio ficha = fichaExercicioRepository.findById(id).orElseThrow(() -> new RuntimeException("FichaExercicio não encontrado"));
+        // Busca o FichaExercicio no repositório
+        FichaExercicio fichaExercicio = fichaExercicioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("FichaExercicio não encontrado"));
 
-        return new DetalharFichaExercicioDTO(ficha);
+        // Retorna o DTO detalhando o FichaExercicio
+        return new DetalharFichaExercicioDTO(fichaExercicio);
     }
 
-    @Transactional //Adicionar logica para editar
-    public DetalharFichaExercicioDTO editarFichaExercicio(long id, CadastrarFichaExercicioDTO dados) {
-        FichaExercicio ficha = fichaExercicioRepository.findById(id).orElseThrow(() -> new RuntimeException("FichaExercicio não encontrado"));
+    @Transactional
+    public DetalharFichaExercicioDTO editarFichaExercicio(long id, EditarFichaExercicioDTO dados) {
+        // Busca o FichaExercicio no repositório
+        FichaExercicio fichaExercicio = fichaExercicioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("FichaExercicio não encontrado"));
 
-        return new DetalharFichaExercicioDTO(ficha);
+        // Atualiza as informações do FichaExercicio
+        fichaExercicio.atualizarInformacoes(dados);
+
+        // Salva as alterações
+        fichaExercicioRepository.save(fichaExercicio);
+
+        // Retorna o DTO detalhando o FichaExercicio atualizado
+        return new DetalharFichaExercicioDTO(fichaExercicio);
     }
 
     @Transactional
     public void excluirFichaExercicio(long id) {
-        fichaExercicioRepository.deleteById(id);
+        // Busca o FichaExercicio no repositório
+        FichaExercicio fichaExercicio = fichaExercicioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("FichaExercicio não encontrado"));
+
+        // Salva as alterações
+        fichaExercicioRepository.delete(fichaExercicio);
     }
 }

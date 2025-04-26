@@ -25,10 +25,13 @@ public class Treino {
     private Long id;
     private String nome;
     private String descricao;
-    private String autor;
 
     //@Enumerated(EnumType.STRING)
     //private Tipo tipo;
+
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    private Usuario autor;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
@@ -37,7 +40,7 @@ public class Treino {
     @OneToMany(mappedBy = "treino")
     private List<Ficha> fichas;
 
-    public Treino(String nome, String descricao, String autor, Usuario usuario) {
+    public Treino(String nome, String descricao, Usuario autor, Usuario usuario) {
         this.nome = nome;
         this.descricao = descricao;
         this.autor = autor;
@@ -52,9 +55,9 @@ public class Treino {
         if (descricao != null) {
             this.descricao = dados.descricao();
         }
-        if (autor != null) {
-            this.autor = dados.autor();
-        }
+        //if (autor != null) {
+        //    this.autor = dados.autor();
+        //}
         //if (usuario != null) {
         //    this.usuario = dados.usuario();
         //}

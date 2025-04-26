@@ -9,6 +9,8 @@ import com.dtplan.domain.ficha.dto.ListarFichaDTO;
 import com.dtplan.domain.fichaExercicio.FichaExercicioService;
 import com.dtplan.domain.fichaExercicio.dto.CadastrarFichaExercicioDTO;
 import com.dtplan.domain.fichaExercicio.dto.DetalharFichaExercicioDTO;
+import com.dtplan.domain.fichaExercicio.dto.EditarFichaExercicioDTO;
+import com.dtplan.domain.fichaExercicio.dto.FichaExercicioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +39,7 @@ public class FichaExercicioController {
 	}
 
 	@PutMapping("/editar/{id}")
-	public ResponseEntity<DetalharFichaExercicioDTO> editarFichaExercicio(@PathVariable long id, @RequestBody CadastrarFichaExercicioDTO dados) {
+	public ResponseEntity<DetalharFichaExercicioDTO> editarFichaExercicio(@PathVariable long id, @RequestBody EditarFichaExercicioDTO dados) {
 		var dto = fichaExercicioService.editarFichaExercicio(id, dados);
 		return ResponseEntity.ok(dto);
 	}
@@ -61,4 +63,6 @@ public class FichaExercicioController {
 
 		return ResponseEntity.ok(dto);
 	}
+
+
 }

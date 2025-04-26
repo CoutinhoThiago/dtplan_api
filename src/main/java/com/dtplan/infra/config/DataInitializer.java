@@ -222,7 +222,7 @@ public class DataInitializer implements CommandLineRunner {
             exercicios.forEach(exercicioService::cadastrarExercicio);
             System.out.println("Exercícios cadastrados com sucesso!");
 
-            FichaExercicio teste = new FichaExercicio(fichaRepository.getReferenceById(1L), exercicioRepository.getReferenceById(1L), 2, 3, 20, 0, 0);
+            FichaExercicio teste = new FichaExercicio(fichaRepository.getReferenceById(1L), exercicioRepository.getReferenceById(1L), 2, 3, 20, 0, 0, 0);
         }
 
         // Cadastrando treinos se não houver nenhum no banco
@@ -231,27 +231,42 @@ public class DataInitializer implements CommandLineRunner {
                     new CadastroTreinoDTO(
                             "Treino ABC",
                             "",
-                            "tcoutinhossilva@gmail.com",
+                            new UsuarioDTO(null, null, "tcoutinhossilva@gmail.com", null), // UsuarioDTO com login
                             new UsuarioDTO(null, null, "tcoutinhossilva@gmail.com", null) // UsuarioDTO com login
                     ),
                     new CadastroTreinoDTO(
                             "Rotina de Cárdio",
                             "",
-                            "tcoutinhossilva@gmail.com",
+                            new UsuarioDTO(null, null, "tcoutinhossilva@gmail.com", null), // UsuarioDTO com login
                             new UsuarioDTO(null, null, "tcoutinhossilva@gmail.com", null) // UsuarioDTO com login
                     ),
                     new CadastroTreinoDTO(
                             "Rotina de Abdominal",
                             "",
-                            "tcoutinhossilva@gmail.com",
+                            new UsuarioDTO(null, null, "tcoutinhossilva@gmail.com", null), // UsuarioDTO com login
                             new UsuarioDTO(null, null, "tcoutinhossilva@gmail.com", null) // UsuarioDTO com login
                     ),
                     new CadastroTreinoDTO(
                             "Treino sem ficha (teste)",
                             "",
-                            "tcoutinhossilva@gmail.com",
+                            new UsuarioDTO(null, null, "tcoutinhossilva@gmail.com", null), // UsuarioDTO com login
                             new UsuarioDTO(null, null, "tcoutinhossilva@gmail.com", null) // UsuarioDTO com login
+                    ),
+
+                    new CadastroTreinoDTO(
+                            "Treino ABC aluno",
+                            "",
+                            new UsuarioDTO(null, null, "tcoutinhossilva@gmail.com", null), // UsuarioDTO com login
+                            new UsuarioDTO(null, null, "aluno@gmail.com", null) // UsuarioDTO com login
+                    ),
+                    new CadastroTreinoDTO(
+                            "Treino teste aluno (teste)",
+                            "",
+                            new UsuarioDTO(null, null, "aluno@gmail.com", null), // UsuarioDTO com login
+                            new UsuarioDTO(null, null, "aluno@gmail.com", null) // UsuarioDTO com login
                     )
+
+
             );
 
             // Cadastra cada treino no banco de dados
@@ -264,12 +279,15 @@ public class DataInitializer implements CommandLineRunner {
             List<CadastrarFichaDTO> fichas = List.of(
                     // Fichas para o treino ABC
                     new CadastrarFichaDTO("Ficha A - Push", 1L, new ArrayList<>()),
-
                     new CadastrarFichaDTO("Ficha B - Pull", 1L, new ArrayList<>()),
-
                     new CadastrarFichaDTO("Ficha C - Legs", 1L, new ArrayList<>()),
                     new CadastrarFichaDTO("Ficha HIIT", 2L, new ArrayList<>()),
-                    new CadastrarFichaDTO("Ficha Abdominal", 3L, new ArrayList<>())
+                    new CadastrarFichaDTO("Ficha Abdominal", 3L, new ArrayList<>()),
+
+                    //Aluno
+                    new CadastrarFichaDTO("Ficha A - Push", 5L, new ArrayList<>()),
+                    new CadastrarFichaDTO("Ficha B - Pull", 5L, new ArrayList<>()),
+                    new CadastrarFichaDTO("Ficha C - Legs", 5L, new ArrayList<>())
             );
 
             // Cadastra cada ficha no banco de dados
@@ -317,7 +335,44 @@ public class DataInitializer implements CommandLineRunner {
                     new CadastrarFichaExercicioDTO(4L, 31L, 2, 3, 20, 0, 0), // HIIT
 
                     // Ficha Abdominal
-                    new CadastrarFichaExercicioDTO(5L, 32L, 2, 3, 20, 0, 0)  // Abdominais
+                    new CadastrarFichaExercicioDTO(5L, 32L, 2, 3, 20, 0, 0),  // Abdominais
+
+                    // Ficha A - Push (Peito e Ombros)
+                    new CadastrarFichaExercicioDTO(6L, 1L, 2, 3, 20, 0, 0), // Supino reto
+                    new CadastrarFichaExercicioDTO(6L, 2L, 2, 3, 20, 0, 0), // Crucifixo com halteres
+                    new CadastrarFichaExercicioDTO(6L, 3L, 2, 3, 20, 0, 0), // Supino inclinado
+                    new CadastrarFichaExercicioDTO(6L, 4L, 2, 3, 20, 0, 0), // Supino declinado
+                    new CadastrarFichaExercicioDTO(6L, 5L, 2, 3, 20, 0, 0), // Tríceps coice com halter
+                    new CadastrarFichaExercicioDTO(6L, 6L, 2, 3, 20, 0, 0), // Tríceps pulley corda
+                    new CadastrarFichaExercicioDTO(6L, 7L, 2, 3, 20, 0, 0), // Elevação lateral com halteres
+                    new CadastrarFichaExercicioDTO(6L, 8L, 2, 3, 20, 0, 0), // Desenvolvimento com halteres (pegada neutra)
+
+                    // Ficha B - Pull (Costas e Bíceps)
+                    new CadastrarFichaExercicioDTO(7L, 9L, 2, 3, 20, 0, 0), // Puxador frontal pegada pronada
+                    new CadastrarFichaExercicioDTO(7L, 10L, 2, 3, 20, 0, 0), // Puxador frontal unilateral
+                    new CadastrarFichaExercicioDTO(7L, 11L, 2, 3, 20, 0, 0), // Remada cavalinho (pegada neutra)
+                    new CadastrarFichaExercicioDTO(7L, 12L, 2, 3, 20, 0, 0), // Remada cavalinho (pegada pronada)
+                    new CadastrarFichaExercicioDTO(7L, 13L, 2, 3, 20, 0, 0), // Rosca direta com barra W
+                    new CadastrarFichaExercicioDTO(7L, 14L, 2, 3, 20, 0, 0), // Rosca scott com barra W
+                    new CadastrarFichaExercicioDTO(7L, 15L, 2, 3, 20, 0, 0), // Rosca inversa com barra W
+                    new CadastrarFichaExercicioDTO(7L, 16L, 2, 3, 20, 0, 0), // Barra Fixa
+                    new CadastrarFichaExercicioDTO(7L, 17L, 2, 3, 20, 0, 0), // Face Pull
+                    new CadastrarFichaExercicioDTO(7L, 18L, 2, 3, 20, 0, 0), // Pulldown
+
+                    // Ficha C - Legs (Pernas)
+                    new CadastrarFichaExercicioDTO(8L, 19L, 2, 3, 20, 0, 0), // Agachamento búlgaro
+                    new CadastrarFichaExercicioDTO(8L, 20L, 2, 3, 20, 0, 0), // Agachamento smith
+                    new CadastrarFichaExercicioDTO(8L, 21L, 2, 3, 20, 0, 0), // Agachamento sumô no smith
+                    new CadastrarFichaExercicioDTO(8L, 22L, 2, 3, 20, 0, 0), // Cadeira extensora
+                    new CadastrarFichaExercicioDTO(8L, 23L, 2, 3, 20, 0, 0), // Cadeira abdutora
+                    new CadastrarFichaExercicioDTO(8L, 24L, 2, 3, 20, 0, 0), // Mesa flexora
+                    new CadastrarFichaExercicioDTO(8L, 25L, 2, 3, 20, 0, 0), // Stiff
+                    new CadastrarFichaExercicioDTO(8L, 26L, 2, 3, 20, 0, 0), // Panturrilha sentado máquina
+                    new CadastrarFichaExercicioDTO(8L, 27L, 2, 3, 20, 0, 0), // Leg Press
+                    new CadastrarFichaExercicioDTO(8L, 28L, 2, 3, 20, 0, 0), // Agachamento Frontal
+                    new CadastrarFichaExercicioDTO(8L, 29L, 2, 3, 20, 0, 0), // Leg Curl
+                    new CadastrarFichaExercicioDTO(8L, 30L, 2, 3, 20, 0, 0) // Avanço
+
             );
 
             fichaExercicios.forEach(fichaExercicioService::cadastrarFichaExercicio);

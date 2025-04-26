@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public record CadastroTreinoDTO(
 		String nome,
 		String descricao,
-		String autor,
+		UsuarioDTO autor,
 		UsuarioDTO usuario // Objeto usuario flexível
 ) {
 }

@@ -47,10 +47,13 @@ public class Ficha {
             this.fichaExercicios = new ArrayList<>();
         }
 
+        int ordem = this.fichaExercicios.size();
+
         for (Exercicio exercicio : exercicios) {
             FichaExercicio fichaExercicio = new FichaExercicio();
             fichaExercicio.setExercicio(exercicio);
             fichaExercicio.setFicha(this);
+            fichaExercicio.setOrdem(ordem++);
             this.fichaExercicios.add(fichaExercicio);
         }
     }

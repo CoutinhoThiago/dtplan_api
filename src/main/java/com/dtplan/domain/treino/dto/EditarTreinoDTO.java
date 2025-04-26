@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public record EditarTreinoDTO(
 		String nome,
 		String descricao,
-		String autor,
 		//String tipo
+		UsuarioDTO autor,
 		UsuarioDTO usuario
 
 		) {

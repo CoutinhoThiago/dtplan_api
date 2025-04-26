@@ -2,6 +2,8 @@ package com.dtplan.domain.fichaExercicio;
 
 import com.dtplan.domain.exercicio.Exercicio;
 import com.dtplan.domain.ficha.Ficha;
+import com.dtplan.domain.fichaExercicio.dto.EditarFichaExercicioDTO;
+import com.dtplan.domain.fichaExercicio.dto.FichaExercicioDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,8 +39,10 @@ public class FichaExercicio {
 
     private int intensidade;
 
+    private int ordem;
 
-    public FichaExercicio(Ficha ficha, Exercicio exercicio, int repeticoes, int series, double carga, int duracao_minutos, int intensidade) {
+
+    public FichaExercicio(Ficha ficha, Exercicio exercicio, int repeticoes, int series, double carga, int duracao_minutos, int intensidade, int ordem) {
         this.ficha = ficha;
         this.exercicio = exercicio;
 
@@ -48,14 +52,28 @@ public class FichaExercicio {
 
         this.duracao_minutos = duracao_minutos;
         this.intensidade = intensidade;
+        this.ordem = ordem;
     }
 
-    public void atualizarInformacoes(int series, double carga) {
-        if (series > 0) {
-            this.series = series;
+    public void atualizarInformacoes(EditarFichaExercicioDTO dados) {
+        if (dados.repeticoes() != null) {
+            this.repeticoes = dados.repeticoes();
         }
-        if (carga >= 0) {
-            this.carga = carga;
+        if (dados.series() != null) {
+            this.series = dados.series();
+        }
+        if (dados.carga() != null) {
+            this.carga = dados.carga();
+        }
+        if (dados.duracao_minutos() != null) {
+            this.duracao_minutos = dados.duracao_minutos();
+        }
+        if (dados.intensidade() != null) {
+            this.intensidade = dados.intensidade();
+        }
+
+        if (dados.ordem() != null) {
+            this.ordem = dados.ordem();
         }
     }
 }
